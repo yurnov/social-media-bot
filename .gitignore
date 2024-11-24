@@ -1,0 +1,14 @@
+# dotenv environment variables file
+.env
+.env.*
+
+# Byte-compiled / optimized / compiled Python files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+env/
+venv/
+ENV/
+.VENV/
