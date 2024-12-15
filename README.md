@@ -1,10 +1,14 @@
-### 1. ```pip install -r requirements.txt```
+### 1. Installation of packages
+```
+pip install -r requirements.txt
+```
   
-  or install manually 
-  ```sudo curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp
-  sudo apt update && sudo apt install ffmpeg -y
-  pip install python-telegram-bot python-dotenv
-  sudo chmod a+rx /usr/local/bin/yt-dlp
+or install manually 
+```
+sudo curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp
+sudo apt update && sudo apt install ffmpeg -y
+pip install python-telegram-bot python-dotenv
+sudo chmod a+rx /usr/local/bin/yt-dlp
 ```
 ### 2. sudo nano /etc/systemd/system/insta-bot.service
 
@@ -34,7 +38,9 @@ Environment: Pass environment variables like the BOT_TOKEN or DEBUG.
 Restart=always: Restarts the bot if it crashes.
 ```
 ### 3. Start deamon
-   ```sudo systemctl daemon-reload
-   sudo systemctl enable insta-bot.service
-   sudo systemctl start insta-bot.service
-   sudo systemctl status insta-bot.service```
+```
+sudo systemctl daemon-reload
+sudo systemctl enable insta-bot.service
+sudo systemctl start insta-bot.service
+sudo systemctl status insta-bot.service
+```
