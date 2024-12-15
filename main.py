@@ -140,8 +140,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE): # 
     elif "instagram.com/stories/" in url:
         await update.message.reply_text("Сторіз не можу скачати. Треба логін")
 
-    elif "instagram.com/reel/" in url or "tiktok.com/" in url:
-        wait_message = await update.message.reply_text("Почекай пару сек...")
+    elif "instagram.com/reel/" in url or "tiktok.com/" in url or "reddit.com" in url or "x.com" in url:
+        # wait_message = await update.message.reply_text("Почекай пару сек...")
 
         video_path = download_video(url)
 
@@ -149,7 +149,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE): # 
             with open(video_path, 'rb') as video_file:
                 try:
                     await update.message.reply_video(video_file)
-                    await wait_message.delete()
+                    # await wait_message.delete()
                 except TimedOut as e:
                     print_logs(f"Telegram timeout while sending video. {e}")
                 except Exception as e:
@@ -157,8 +157,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE): # 
                     return None
             cleanup_file(video_path) # Delete video after sending to tg
         else:
-            await wait_message.delete()
-            await update.message.reply_text("О Курва! Якась помилка. Спробуй ще.")
+            pass
+            # await wait_message.delete()
+            # await update.message.reply_text("О Курва! Якась помилка. Спробуй ще.")
     else:
         pass
 
