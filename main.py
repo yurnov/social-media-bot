@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from telegram import Update
 from telegram.error import TimedOut
 from telegram.ext import Application, MessageHandler, filters, ContextTypes
+from telegram.constants import MessageEntityType
 
 
 load_dotenv()
@@ -25,6 +26,35 @@ def load_responses():
     with open("responses.json", "r", encoding="utf-8") as file:
         data = json.load(file)
     return data["responses"]
+
+
+def spoiler_in_message(entities):
+    """
+    Checks if any of the provided message entities contain a spoiler.
+
+    This function iterates through the list of message entities and checks if 
+    any of them have the type `MessageEntityType.SPOILER`.
+
+    Args:
+        entities (list): A list of `MessageEntity` objects from a Telegram message.
+                         These entities describe parts of the message (e.g., bold text,
+                         spoilers, mentions, etc.).
+
+    Returns:
+        bool: True if a spoiler entity is found, False otherwise.
+
+    Example:
+        entities = [
+            MessageEntity(length=65, offset=0, type=MessageEntityType.SPOILER),
+            MessageEntity(length=10, offset=70, type=MessageEntityType.BOLD)
+        ]
+        spoiler_in_message(entities)  # Returns: True
+    """
+    if entities:
+        for entity in entities:
+            if entity.type == MessageEntityType.SPOILER:
+                return True
+    return False
 
 
 responses = load_responses()
@@ -144,11 +174,15 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE): # 
         # wait_message = await update.message.reply_text("Почекай пару сек...")
 
         video_path = download_video(url)
+        visibility_flag = spoiler_in_message(update.message.entities)
 
         if video_path and os.path.exists(video_path):
             with open(video_path, 'rb') as video_file:
                 try:
-                    await update.message.reply_video(video_file)
+                    await update.message.chat.send_video(
+                        video=video_file,
+                        has_spoiler=visibility_flag
+                    )
                     # await wait_message.delete()
                 except TimedOut as e:
                     print_logs(f"Telegram timeout while sending video. {e}")
