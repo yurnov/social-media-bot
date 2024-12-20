@@ -6,9 +6,9 @@ pip install -r requirements.txt
 or install manually 
 ```
 sudo curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp
+sudo chmod a+rx /usr/local/bin/yt-dlp
 sudo apt update && sudo apt install ffmpeg -y
 pip install python-telegram-bot python-dotenv
-sudo chmod a+rx /usr/local/bin/yt-dlp
 ```
 ### 2. sudo nano /etc/systemd/system/insta-bot.service
 
