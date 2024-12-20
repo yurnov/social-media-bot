@@ -105,7 +105,7 @@ def download_video(url):
         "yt-dlp",  # Assuming yt-dlp is installed and in the PATH
         "-S", "vcodec:h264,fps,res,acodec:m4a",
         url,
-        "-o", os.path.join(temp_dir, "%(title)s.%(ext)s")
+        "-o", os.path.join(temp_dir, "%(id)s.%(ext)s")
     ]
 
     try:
