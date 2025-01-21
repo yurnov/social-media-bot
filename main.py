@@ -4,14 +4,16 @@ import random
 import json
 from dotenv import load_dotenv
 from telegram import Update
-from telegram.error import TimedOut
+from telegram.error import TimedOut, NetworkError, TelegramError
 from telegram.ext import Application, MessageHandler, filters, ContextTypes
 from telegram.constants import MessageEntityType
 from logger import print_logs
 from video_utils import compress_video, download_video, cleanup_file
 
 load_dotenv()
-supported_sites = ["instagram.com/", "tiktok.com/", "reddit.com/", "//x.com/", "**https:"]
+supported_sites = ["//instagram.com/", "//tiktok.com/",
+                   "//reddit.com/", "//x.com/", "//youtube.com/shorts", "**https://"]
+
 
 def load_responses():
     """Function loading bot responses."""
@@ -52,7 +54,7 @@ def spoiler_in_message(entities):
 responses = load_responses()
 
 
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE): # pylint: disable=unused-argument
+async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  # pylint: disable=unused-argument
     """
     Handles incoming messages from the Telegram bot.
 
@@ -62,80 +64,84 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE): # 
 
     Parameters:
         update (telegram.Update): Represents the incoming update from the Telegram bot.
+        context (ContextTypes.DEFAULT_TYPE): The context object for the handler.
 
     Behavior:
         - If the message contains "ботяра" (case insensitive), responds with a random response
           from a predefined list.
         - If the message contains an Instagram Stories URL, informs the user that login is required.
-        - If the message contains an Instagram Reels or TikTok URL:
-            - Sends a "please wait" message to the user.
-            - Downloads the video using the `download_video` function.
-            - Sends the downloaded video back to the user via Telegram.
-            - Cleans up the temporary file after sending the video.
-        - If the video download or sending fails, notifies the user with an error message.
-
-    Exceptions:
-        - Handles `telegram.error.TimedOut` errors if sending the video to Telegram times out.
-        - Logs unexpected errors during the video sending or download process.
-
-    Notes:
-        - Assumes the `download_video` function is implemented and working correctly.
-        - Uses a predefined list of responses for the "ботяра" keyword.
-        - Deletes temporary files and directories after successfully handling a video.
+        - If the message contains a supported URL (Instagram Reels, TikTok, Reddit, X/Twitter):
+            - Downloads and optionally compresses the video
+            - Sends the video back to the user via Telegram
+            - Preserves spoiler tags if present in original message
+            - Cleans up temporary files after sending
+        - Handles various error cases with appropriate user feedback
 
     Returns:
         None
     """
     if not update.message or not update.message.text:
         return
-    url = update.message.text
 
-    if "ботяра" in url.lower():
-        response = random.choice(responses)
-        await update.message.reply_text(response)
+    message_text = update.message.text.strip()
+
+    # Handle bot mention response
+    if "ботяра" in message_text.lower():
+        await update.message.reply_text(random.choice(responses))
         return
-    
-    if "instagram.com/stories/" in url:
+
+    # Handle Instagram stories
+    if "instagram.com/stories/" in message_text:
         await update.message.reply_text("Сторіз не можу скачати. Треба логін")
         return
     
-    if any(site in url for site in supported_sites):
-        url = url[2:] if url.startswith("**") else url  # Remove '**' if present
+    message_text = message_text.replace("** ", "**")
+
+    # Check if URL is from a supported site
+    if not any(site in message_text for site in supported_sites):
+        return
+
+    try:
+        # Remove '**' prefix and any spaces if present
+        url = message_text.replace("**", "") if message_text.startswith("**") else message_text
 
         # Download the video
         video_path = download_video(url)
 
         if not video_path or not os.path.exists(video_path):
             return
-        
+
         # Compress video if it's larger than 50MB
-        if os.path.getsize(video_path) / (1024 * 1024) > 50:
+        file_size_mb = os.path.getsize(video_path) / (1024 * 1024)
+        if file_size_mb > 50:
             compress_video(video_path)
 
-        # Check if the message has a spoiler
-        visibility_flag = spoiler_in_message(update.message.entities)
+        # Check for spoiler flag
+        has_spoiler = spoiler_in_message(update.message.entities)
 
         # Send the video to the chat
         try:
             with open(video_path, 'rb') as video_file:
                 await update.message.chat.send_video(
                     video=video_file,
-                    has_spoiler=visibility_flag,
+                    has_spoiler=has_spoiler,
                     disable_notification=True,
                     write_timeout=8000,
                     read_timeout=8000
                 )
         except TimedOut as e:
             print_logs(f"Telegram timeout while sending video. {e}")
-        except Exception:
+        except (NetworkError, TelegramError):
             await update.message.reply_text(
-                f"О kurwa! Compressed file size: {os.path.getsize(video_path) / (1024 * 1024):.2f}MB. Telegram API Max is 50MB"
+                (f"О kurwa! Compressed file size: "
+                 f"{os.path.getsize(video_path) / (1024 * 1024):.2f}MB. "
+                 f"Telegram API Max is 50MB")
             )
 
-        # Clean up the video file after sending
-        cleanup_file(video_path)
-    else:
-        return
+    finally:
+        # Clean up temporary files
+        if video_path and os.path.exists(video_path):
+            cleanup_file(video_path)
 
 
 def main():
@@ -166,7 +172,8 @@ def main():
     """
     bot_token = os.getenv("BOT_TOKEN")
     application = Application.builder().token(bot_token).build()
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+    application.add_handler(MessageHandler(
+        filters.TEXT & ~filters.COMMAND, handle_message))
     print("Bot started. Ctrl+C to stop")
     application.run_polling()
 

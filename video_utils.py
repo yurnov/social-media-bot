@@ -2,6 +2,7 @@
 # pylint: disable=missing-function-docstring
 
 import os
+import shutil
 import subprocess
 import tempfile
 from dotenv import load_dotenv
@@ -61,9 +62,14 @@ def get_video_duration(video_path):
         video_path
     ]
     try:
-        result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
+        result = subprocess.run(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True, check=True
+        )
         return float(result.stdout.strip())
-    except Exception as e:
+    except (subprocess.CalledProcessError, ValueError) as e:
         print(f"Error getting video duration: {e}")
         return None
 
@@ -106,8 +112,8 @@ def download_video(url):
     except subprocess.TimeoutExpired as e:
         print_logs(f"Download process timed out: {e}")
         return None
-    except Exception as e:
-        print_logs(f"An unexpected error occurred: {e}")
+    except (OSError, IOError) as e:
+        print_logs(f"File system error occurred: {e}")
         return None
 
 
@@ -126,8 +132,7 @@ def cleanup_file(video_path):
     """
     print_logs(f"Video to delete {video_path}")
     try:
-        os.remove(video_path)
-        os.rmdir(os.path.dirname(video_path))
+        shutil.rmtree(os.path.dirname(video_path))
         print_logs(f"Video deleted {video_path}")
-    except Exception as cleanup_error:
+    except (OSError, IOError) as cleanup_error:
         print_logs(f"Error deleting file: {cleanup_error}")
