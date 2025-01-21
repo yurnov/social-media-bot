@@ -94,7 +94,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
     if "instagram.com/stories/" in message_text:
         await update.message.reply_text("Сторіз не можу скачати. Треба логін")
         return
-    
+
     message_text = message_text.replace("** ", "**")
 
     # Check if URL is from a supported site
