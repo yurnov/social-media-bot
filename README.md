@@ -3,7 +3,7 @@
 # Instagram Bot Setup Guide
 
 This guide provides step-by-step instructions to install and run the Instagram bot on a Linux system.
-Bot created using [yt-dlp](https://github.com/yt-dlp/yt-dlp) on the backend. 
+- Backend code uses [yt-dlp](https://github.com/yt-dlp/yt-dlp) which is released under [The Unlicense](https://unlicense.org/). All rights for yt-dlp belong to its respective authors. 
 ---
 
 ## 1. Install Required Packages
