@@ -1,6 +1,5 @@
 # dotenv environment variables file
 .env
-.env.*
 
 # Byte-compiled / optimized / compiled Python files
 __pycache__/
