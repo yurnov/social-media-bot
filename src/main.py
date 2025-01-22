@@ -1,4 +1,5 @@
 """Download videos from tiktok, x(twitter), reddit, and insta reels"""
+
 import os
 import random
 import json
@@ -26,7 +27,7 @@ def spoiler_in_message(entities):
     """
     Checks if any of the provided message entities contain a spoiler.
 
-    This function iterates through the list of message entities and checks if 
+    This function iterates through the list of message entities and checks if
     any of them have the type `MessageEntityType.SPOILER`.
 
     Args:
@@ -127,15 +128,17 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
                     has_spoiler=has_spoiler,
                     disable_notification=True,
                     write_timeout=8000,
-                    read_timeout=8000
+                    read_timeout=8000,
                 )
         except TimedOut as e:
             print_logs(f"Telegram timeout while sending video. {e}")
         except (NetworkError, TelegramError):
             await update.message.reply_text(
-                (f"О kurwa! Compressed file size: "
-                 f"{os.path.getsize(video_path) / (1024 * 1024):.2f}MB. "
-                 f"Telegram API Max is 50MB")
+                (
+                    f"О kurwa! Compressed file size: "
+                    f"{os.path.getsize(video_path) / (1024 * 1024):.2f}MB. "
+                    f"Telegram API Max is 50MB"
+                )
             )
 
     finally:
@@ -153,10 +156,10 @@ def main():
     Steps:
         1. Retrieves the bot token from the environment variable `BOT_TOKEN`.
         2. Builds a Telegram bot application using the `Application.builder()` method.
-        3. Adds a message handler to process all text messages (excluding commands) using the 
+        3. Adds a message handler to process all text messages (excluding commands) using the
            `handle_message` function.
         4. Prints a message to indicate the bot has started.
-        5. Starts the bot's polling loop, allowing it to listen for incoming updates until 
+        5. Starts the bot's polling loop, allowing it to listen for incoming updates until
            manually stopped (Ctrl+C).
 
     Dependencies:
@@ -172,8 +175,7 @@ def main():
     """
     bot_token = os.getenv("BOT_TOKEN")
     application = Application.builder().token(bot_token).build()
-    application.add_handler(MessageHandler(
-        filters.TEXT & ~filters.COMMAND, handle_message))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     print("Bot started. Ctrl+C to stop")
     application.run_polling()
 
