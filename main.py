@@ -11,8 +11,8 @@ from logger import print_logs
 from video_utils import compress_video, download_video, cleanup_file
 
 load_dotenv()
-supported_sites = ["//instagram.com/", "//tiktok.com/",
-                   "//reddit.com/", "//x.com/", "//youtube.com/shorts", "**https://"]
+supported_sites = ["instagram.com/", "tiktok.com/",
+                   "reddit.com/", "x.com/", "youtube.com/shorts", "**https://"]
 
 
 def load_responses():
