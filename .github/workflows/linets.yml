@@ -34,7 +34,7 @@ jobs:
           pylint --disable=R,C,W1203,W0105 .
 
       - name: Lint Dockerfile with hadolint
-        uses: hadolint/hadolint-action@v3
+        uses: hadolint/hadolint-action@v3.1.0
         with:
           dockerfile: Dockerfile
           failure-threshold: error
