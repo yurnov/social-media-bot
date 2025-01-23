@@ -57,3 +57,10 @@ jobs:
           subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
+
+      - name: Restart service
+        run: |
+          wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -O /usr/local/bin/cloudflared 
+          chmod +x /usr/local/bin/cloudflared
+          echo "${{ secrets.GIT_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          ssh -o "StrictHostKeyChecking no" -i ~/.ssh/id_ed25519 ${{ secrets.GIT_USERNAME }}@${{ secrets.GIT_REMOTE_HOST }} sudo systemctl restart ${{ secrets.GIT_REMOTE_SERVICE }}
