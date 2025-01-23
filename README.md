@@ -135,9 +135,5 @@ Example:
 ```bash
   **https://www.youtube.com/watch?v=rxdu3whDVSM or with a space ** https://www.youtube.com/watch?v=rxdu3whDVSM
 ```
-<<<<<<< HEAD
-=======
-
->>>>>>> upstream/main
 - Full list of supported sites here: [yt-dlp Supported Sites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)
 ---
