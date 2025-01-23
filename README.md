@@ -12,7 +12,7 @@ You can install the required dependencies using one of the following methods:
 
 ### Automatic Installation:
 ```bash
-pip install -r requirements.txt
+pip install -r scr/requirements.txt
 ```
 
 ### Manual Installation:
