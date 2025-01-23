@@ -84,6 +84,10 @@ Edit `.env` file with the your secrets and run container.
 docker build . -t insta-bot:latest
 docker run -d --name insta-bot --restart always --env-file .env insta-bot:latest
 ```
+or use builded image from Docker hub
+```
+docker run -d --name insta-bot --restart always --env-file .env ovchynnikov/load-bot-linux:latest
+```
 ---
 
 ## Troubleshooting
