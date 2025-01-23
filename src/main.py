@@ -10,17 +10,9 @@ from telegram.ext import Application, MessageHandler, filters, ContextTypes
 from telegram.constants import MessageEntityType
 from logger import print_logs
 from video_utils import compress_video, download_video, cleanup_file
+from permissions import is_user_or_chat_not_allowed, supported_sites
 
 load_dotenv()
-supported_sites = [
-    "**https://",
-    "instagram.com/",
-    "tiktok.com/",
-    "reddit.com/",
-    "x.com/",
-    "youtube.com/shorts",
-]
-
 
 def load_responses():
     """Function loading bot responses."""
@@ -97,6 +89,11 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
         await update.message.reply_text(random.choice(responses))
         return
 
+    # Check if user is not allowed
+    if is_user_or_chat_not_allowed(update.effective_user.username, update.effective_chat.id):
+        await update.message.reply_text("You are not allowed to use this bot")
+        return
+
     # Handle Instagram stories
     if "instagram.com/stories/" in message_text:
         await update.message.reply_text("Сторіз не можу скачати. Треба логін")
@@ -114,7 +111,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
 
         # Download the video
         video_path = download_video(url)
-
+        # Check if video was downloaded
         if not video_path or not os.path.exists(video_path):
             return
 
