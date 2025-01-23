@@ -70,7 +70,11 @@ def get_video_duration(video_path):
         "format=duration",
         "-of",
         "default=noprint_wrappers=1:nokey=1",
+<<<<<<< HEAD:src/video_utils.py
         video_path,
+=======
+        video_path
+>>>>>>> upstream/main:video_utils.py
     ]
     try:
         result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
@@ -105,7 +109,11 @@ def download_video(url):
         "vcodec:h264,fps,res,acodec:m4a",
         url,
         "-o",
+<<<<<<< HEAD:src/video_utils.py
         os.path.join(temp_dir, "%(id)s.%(ext)s"),
+=======
+        os.path.join(temp_dir, "%(id)s.%(ext)s")
+>>>>>>> upstream/main:video_utils.py
     ]
 
     try:

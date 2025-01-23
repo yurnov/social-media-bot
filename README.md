@@ -1,8 +1,8 @@
 ---
 
-# Instagram Bot Setup Guide
+# Video Downloader Bot Setup Guide
 
-This guide provides step-by-step instructions to install and run the Instagram bot on a Linux system.
+This guide provides step-by-step instructions to install and run the Video Downloader bot on a Linux system.
 - Backend code uses [yt-dlp](https://github.com/yt-dlp/yt-dlp) which is released under [The Unlicense](https://unlicense.org/). All rights for yt-dlp belong to its respective authors.
 ---
 
@@ -38,7 +38,7 @@ sudo nano /etc/systemd/system/insta-bot.service
 Add the following configuration to the file:
 ```ini
 [Unit]
-Description=Instagram Bot Service
+Description=Video Downloader Bot Service
 After=network.target
 
 [Service]
@@ -135,5 +135,9 @@ Example:
 ```bash
   **https://www.youtube.com/watch?v=rxdu3whDVSM or with a space ** https://www.youtube.com/watch?v=rxdu3whDVSM
 ```
+<<<<<<< HEAD
+=======
+
+>>>>>>> upstream/main
 - Full list of supported sites here: [yt-dlp Supported Sites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)
 ---
