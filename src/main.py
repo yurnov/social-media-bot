@@ -91,7 +91,11 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
 
     # Check if user is not allowed
     if is_user_or_chat_not_allowed(update.effective_user.username, update.effective_chat.id):
-        await update.message.reply_text("You are not allowed to use this bot")
+        await update.message.reply_text(
+            f"You are not allowed to use this bot. "
+            f"Your username is {update.effective_user.username} "
+            f"and chat id is {update.effective_chat.id}"
+        )
         return
 
     # Handle Instagram stories
