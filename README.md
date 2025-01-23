@@ -1,9 +1,9 @@
 ---
 
-# Instagram Bot Setup Guide
+# Video Downloader Bot Setup Guide
 
-This guide provides step-by-step instructions to install and run the Instagram bot on a Linux system.
-- Backend code uses [yt-dlp](https://github.com/yt-dlp/yt-dlp) which is released under [The Unlicense](https://unlicense.org/). All rights for yt-dlp belong to its respective authors. 
+This guide provides step-by-step instructions to install and run the Video Downloader bot on a Linux system.
+- Backend code uses [yt-dlp](https://github.com/yt-dlp/yt-dlp) which is released under [The Unlicense](https://unlicense.org/). All rights for yt-dlp belong to its respective authors.
 ---
 
 ## 1. Install Required Packages
@@ -35,7 +35,7 @@ sudo nano /etc/systemd/system/insta-bot.service
 Add the following configuration to the file:
 ```ini
 [Unit]
-Description=Instagram Bot Service
+Description=Video Downloader Bot Service
 After=network.target
 
 [Service]
@@ -89,12 +89,12 @@ sudo systemctl status insta-bot.service
 Follow these simple steps to set up and use the bot:
 
 ### 1. Create Your Telegram Bot
-- Follow this guide to create your Telegram bot and obtain the bot token:  
+- Follow this guide to create your Telegram bot and obtain the bot token:
   [How to Get Your Bot Token](https://www.freecodecamp.org/news/how-to-create-a-telegram-bot-using-python/).
 
 ### 2. Health Check
-- Verify the bot is running by sending a message with the trigger word:  
-  **`ботяра`**  
+- Verify the bot is running by sending a message with the trigger word:
+  **`ботяра`**
 
   If the bot is active, it will respond accordingly.
 
@@ -121,6 +121,7 @@ youtube shorts
 Example:
 ```bash
   **https://www.youtube.com/watch?v=rxdu3whDVSM or with a space ** https://www.youtube.com/watch?v=rxdu3whDVSM
-``` 
+```
+
 - Full list of supported sites here: [yt-dlp Supported Sites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)
 ---

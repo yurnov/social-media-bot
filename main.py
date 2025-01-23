@@ -1,4 +1,5 @@
-"""Download videos from tiktok, x(twitter), reddit, and insta reels"""
+"""Download videos from tiktok, x(twitter), reddit, youtube shorts, instagram reels and many more"""
+
 import os
 import random
 import json
@@ -66,7 +67,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
 
     This function processes text messages sent to the bot and determines the appropriate response
     based on the message content. It supports specific keywords and URLs, such as Instagram Reels
-    and TikTok links, and attempts to download and send the corresponding video.
+    , or other supported sites, and attempts to download and send the corresponding video.
 
     Parameters:
         update (telegram.Update): Represents the incoming update from the Telegram bot.
@@ -76,7 +77,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
         - If the message contains "ботяра" (case insensitive), responds with a random response
           from a predefined list.
         - If the message contains an Instagram Stories URL, informs the user that login is required.
-        - If the message contains a supported URL (Instagram Reels, TikTok, Reddit, X/Twitter):
+        - If the message contains a supported URL (Instagram Reels, Youtube Shorts, TikTok, Reddit, X/Twitter):
             - Downloads and optionally compresses the video
             - Sends the video back to the user via Telegram
             - Preserves spoiler tags if present in original message
