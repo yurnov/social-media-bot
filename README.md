@@ -12,7 +12,7 @@ You can install the required dependencies using one of the following methods:
 
 ### Automatic Installation:
 ```bash
-pip install -r requirements.txt
+pip install -r scr/requirements.txt
 ```
 
 ### Manual Installation:
@@ -22,6 +22,9 @@ sudo chmod a+rx /usr/local/bin/yt-dlp
 sudo apt update && sudo apt install ffmpeg -y
 pip install python-telegram-bot python-dotenv
 ```
+### 2. Create a Linux service
+
+i.e. `sudo nano /etc/systemd/system/insta-bot.service` with content:
 
 ---
 
@@ -71,6 +74,16 @@ sudo systemctl start insta-bot.service
 sudo systemctl status insta-bot.service
 ```
 
+## Deploy with Docker
+
+Alternatively, you can use Docker.
+
+Edit `.env` file with the your secrets and run container.
+
+```
+docker build . -t insta-bot:latest
+docker run -d --name insta-bot --restart always --env-file .env insta-bot:latest
+```
 ---
 
 ## Troubleshooting
@@ -122,6 +135,5 @@ Example:
 ```bash
   **https://www.youtube.com/watch?v=rxdu3whDVSM or with a space ** https://www.youtube.com/watch?v=rxdu3whDVSM
 ```
-
 - Full list of supported sites here: [yt-dlp Supported Sites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)
 ---

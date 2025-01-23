@@ -10,6 +10,7 @@ from logger import print_logs
 
 load_dotenv()
 
+
 def compress_video(input_path):
     """
     Compress video for 50MB with use of FFmpeg.
@@ -44,8 +45,8 @@ def compress_video(input_path):
         "aac",
         "-b:a",
         "128k",
-        "-y",                   
-        temp_output
+        "-y",
+        temp_output,
     ]
 
     try:
@@ -69,15 +70,10 @@ def get_video_duration(video_path):
         "format=duration",
         "-of",
         "default=noprint_wrappers=1:nokey=1",
-        video_path
+        video_path,
     ]
     try:
-        result = subprocess.run(
-            command,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True, check=True
-        )
+        result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
         return float(result.stdout.strip())
     except (subprocess.CalledProcessError, ValueError) as e:
         print(f"Error getting video duration: {e}")
@@ -109,7 +105,7 @@ def download_video(url):
         "vcodec:h264,fps,res,acodec:m4a",
         url,
         "-o",
-        os.path.join(temp_dir, "%(id)s.%(ext)s")
+        os.path.join(temp_dir, "%(id)s.%(ext)s"),
     ]
 
     try:

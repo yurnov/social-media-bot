@@ -1,0 +1,17 @@
+FROM python:3.12-slim
+
+LABEL org.opencontainers.image.source="https://github.com/ovchynnikov/load-bot-linux" \
+        org.opencontainers.image.licenses="MIT" \
+        org.opencontainers.image.title="Social media content download bot" \
+        org.opencontainers.image.description="Telegram bot to download videos from tiktok, x(twitter), reddit, youtube shorts, instagram reels and many more"
+
+RUN --mount=type=bind,target=/tmp/requirements.txt,source=src/requirements.txt \
+    apt-get update && apt-get install --no-install-recommends -y ffmpeg && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    python -m pip install --no-cache-dir -r /tmp/requirements.txt
+
+COPY src /bot
+
+WORKDIR /bot
+
+CMD ["python", "main.py"]
