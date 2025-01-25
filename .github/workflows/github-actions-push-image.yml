@@ -6,7 +6,7 @@ on:
       - '**'
       - '!README.md'
       - '!.github/**/*.md'
-      - '!.github/workflows/**'
+      # - '!.github/workflows/**'
       - '!.env.example'
 
 env:
