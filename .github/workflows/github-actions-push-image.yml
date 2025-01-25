@@ -8,6 +8,13 @@ on:
       - '!.github/**/*.md'
       - '!.github/workflows/**'
       - '!.env.example'
+  pull_request:
+    paths:
+      - '**'
+      - '!README.md'
+      - '!.github/**/*.md'
+      - '!.github/workflows/**'
+      - '!.env.example'
 
 env:
   REGISTRY: index.docker.io
@@ -16,6 +23,10 @@ env:
 
 jobs:
   push_to_registry:
+    if: >
+      github.event_name == 'push' ||
+      github.event.pull_request.head.repo.full_name == github.repository ||
+      contains(split(${{ secrets.TRUSTED_CONTRIBUTORS }}, ','), github.event.pull_request.user.login)
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
     permissions:
