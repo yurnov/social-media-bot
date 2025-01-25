@@ -8,13 +8,6 @@ on:
       - '!.github/**/*.md'
       - '!.github/workflows/**'
       - '!.env.example'
-  pull_request:
-    paths:
-      - '**'
-      - '!README.md'
-      - '!.github/**/*.md'
-      - '!.github/workflows/**'
-      - '!.env.example'
 
 env:
   REGISTRY: index.docker.io
