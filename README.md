@@ -49,9 +49,9 @@ Restart=always
 RestartSec=5
 Environment="BOT_TOKEN=your_bot_token"                 # <====== REPLACE THIS
 Environment="DEBUG=False"
-Environment="LIMIT_BOT_ACCESS=False"                     # <====== REPLACE THIS (optional) Type: Boolean
-Environment="ALLOWED_USERNAMES="                         # <====== REPLACE THIS (value is optional) Type: string separated by commas. Example: ALLOWED_USERNAMES=username1,username2,username3
-Environment="ALLOWED_CHAT_IDS="                          # <====== REPLACE THIS (value is optional) Type: string separated by commas  Example: ALLOWED_CHAT_IDS=12349,12345,123456
+Environment="LIMIT_BOT_ACCESS=False"                   # <====== REPLACE THIS (value is optional. False by default) Type: Boolean
+Environment="ALLOWED_USERNAMES="                       # <====== REPLACE THIS (value is optional) Type: string separated by commas. Example: ALLOWED_USERNAMES=username1,username2,username3
+Environment="ALLOWED_CHAT_IDS="                        # <====== REPLACE THIS (value is optional) Type: string separated by commas  Example: ALLOWED_CHAT_IDS=12349,12345,123456
 
 [Install]
 WantedBy=multi-user.target
