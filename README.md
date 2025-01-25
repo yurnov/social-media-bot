@@ -119,13 +119,13 @@ Follow these simple steps to set up and use the bot:
 - Once the bot is created and the Linux service is running:
   1. Send a URL from **YouTube Shorts**, **Instagram Reels**, or similar platforms to the bot.
   Example:
-  ```bash
+  ```
   https://youtube.com/shorts/kaTxVLGd6IE?si=YaUM3gYjr1kcXqTm
   ```
   3. Wait for the bot to process the URL and respond.
 
 ### Supported platforms by default:
-```bash
+```
 instagram reels
 tiktok
 reddit
@@ -133,11 +133,23 @@ x.com
 youtube shorts
 ```
 
-### Additionaly bot can download videos from other sources (for example youtube). Usually videos shorter than 10 minutes works fine. Telegram limitation is 50MB for a video.
-- To download full video from youtube add two asterisk before the url address.
+### Additionally, the bot can download videos from other sources (for example YouTube)—usually, videos shorter than 10 minutes work fine. Telegram limitation is 50MB for a video.
+- To download the full video from YouTube add two asterisks before the url address.
 Example:
-```bash
+```
   **https://www.youtube.com/watch?v=rxdu3whDVSM or with a space ** https://www.youtube.com/watch?v=rxdu3whDVSM
 ```
 - Full list of supported sites here: [yt-dlp Supported Sites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)
+
+### The bot can use 'Safelist' to restrict access for users or groups.
+- Make sure you have these variables in your `.env` file either not set or with ids.
+- You can get your `chat_id` or `user_id` by setting `LIMIT_BOT_ACCESS=True` first, send a link and the bot will answer you with the IDs.
+- Group Chat has more priority. All users in the Group Chat can use the bot but have no access to the bot privately.
+- When `LIMIT_BOT_ACCESS=True` to use the bot in private messages add the user's ID to the `ALLOWED_USERNAMES` variable.
+- If you want a bot in your Group Chat with restrictions, leave `ALLOWED_CHAT_IDS` empty and define the `ALLOWED_USERNAMES` variable list.
+```
+LIMIT_BOT_ACCESS=False  --- If True, the bot will only work for users in ALLOWED_USERNAMES or ALLOWED_CHAT_IDS
+ALLOWED_USERNAMES=  --- list of allowed usernames as strings separated by commas
+ALLOWED_CHAT_IDS=  --- list of allowed chat IDs as strings separated by commas
+```
 ---
