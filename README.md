@@ -81,7 +81,7 @@ sudo systemctl status insta-bot.service
 
 Alternatively, you can use Docker.
 
-Edit `.env` file with the your secrets and run container.
+Edit `.env` file with your secrets and run the container.
 
 ```
 docker build . -t insta-bot:latest
@@ -146,13 +146,13 @@ Example:
 
 ### The bot can use 'Safelist' to restrict access for users or groups.
 - Make sure you have these variables in your `.env` file either not set or with chat ID and username.
-- You can get your `chat_id` or `username` by setting `LIMIT_BOT_ACCESS=True` first, send a link and the bot will answer you with the chat ID and with your username.
+- You can get your `chat_id` or `username` by setting `LIMIT_BOT_ACCESS=True` first, send a link and the bot will answer you with the chat ID and username.
 - Allowed Group Chat priority is highest. All users in the Group Chat can use the bot even if they have no access to the bot in private chat.
 - When `LIMIT_BOT_ACCESS=True` to use the bot in private messages add the username to the `ALLOWED_USERNAMES` variable.
 - If you want a bot in your Group Chat with restrictions, leave `ALLOWED_CHAT_IDS` empty and define the `ALLOWED_USERNAMES` variable list.
-```
-LIMIT_BOT_ACCESS=False  --- If True, the bot will only work for users in ALLOWED_USERNAMES or ALLOWED_CHAT_IDS
-ALLOWED_USERNAMES=  --- list of allowed usernames as strings separated by commas. Example: ALLOWED_USERNAMES=username1,username2,username3
-ALLOWED_CHAT_IDS=  --- list of allowed chat IDs as strings separated by commas. Example: ALLOWED_CHAT_IDS=12349,12345,123456
+```ini
+LIMIT_BOT_ACCESS=False  # If True, the bot will only work for users in ALLOWED_USERNAMES or ALLOWED_CHAT_IDS
+ALLOWED_USERNAMES= # a list of allowed usernames as strings separated by commas. Example: ALLOWED_USERNAMES=username1,username2,username3
+ALLOWED_CHAT_IDS= # a list of allowed chat IDs as strings separated by commas. Example: ALLOWED_CHAT_IDS=12349,12345,123456
 ```
 ---
