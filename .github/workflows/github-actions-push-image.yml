@@ -1,7 +1,13 @@
 name: Publish Docker image
 
 on:
-  push
+  push:
+    paths:
+      - '**'
+    paths-ignore:
+      - 'README.md'
+      - '.github/**/*.md'
+      - '.env.example'
 
 env:
   REGISTRY: index.docker.io
