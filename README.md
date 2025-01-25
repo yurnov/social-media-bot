@@ -143,9 +143,10 @@ Example:
 
 ### The bot can use 'Safelist' to restrict access for users or groups.
 - Make sure you have these variables in your `.env` file either not set or with ids.
-- You can find chat_id or user_id by setting LIMIT_BOT_ACCESS=True first, send a link and the bot will answer you with the IDs.
-- Group Chat has more priority. Users in the Group Chat can use the bot but have no access to the bot privately.
-- When `LIMIT_BOT_ACCESS=True` to use the bot in private messages add the user's ID to the `ALLOWED_USERNAMES` variable
+- You can get your `chat_id` or `user_id` by setting `LIMIT_BOT_ACCESS=True` first, send a link and the bot will answer you with the IDs.
+- Group Chat has more priority. All users in the Group Chat can use the bot but have no access to the bot privately.
+- When `LIMIT_BOT_ACCESS=True` to use the bot in private messages add the user's ID to the `ALLOWED_USERNAMES` variable.
+- If you want a bot in your Group Chat with restrictions, leave `ALLOWED_CHAT_IDS` empty and define the `ALLOWED_USERNAMES` variable list.
 ```
 LIMIT_BOT_ACCESS=False  --- If True, the bot will only work for users in ALLOWED_USERNAMES or ALLOWED_CHAT_IDS
 ALLOWED_USERNAMES=  --- list of allowed usernames as strings separated by commas
