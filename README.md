@@ -143,8 +143,9 @@ Example:
 
 ### The bot can use 'white lists' to restrict access for users or groups.
 - Make sure you have these variables in your .env file either not set or with relatives id's.
+- You can find chat_id or user_id by setting LIMIT_BOT_ACCESS=True first, send a link and the bot will answer you with the IDs. 
 ```
-LIMIT_BOT_ACCESS=False  --- if True, the bot will only work for users in ALLOWED_USERNAMES or ALLOWED_CHAT_IDS
+LIMIT_BOT_ACCESS=False  --- If True, the bot will only work for users in ALLOWED_USERNAMES or ALLOWED_CHAT_IDS
 ALLOWED_USERNAMES=  --- list of allowed usernames as strings separated by commas
 ALLOWED_CHAT_IDS=  --- list of allowed chat IDs as strings separated by commas
 ```
