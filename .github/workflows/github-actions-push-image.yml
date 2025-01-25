@@ -22,7 +22,7 @@ jobs:
       TRUSTED_CONTRIBUTORS: ${{ secrets.TRUSTED_CONTRIBUTORS }}
     if: >
       github.event_name == 'push' ||
-      contains(split(env.TRUSTED_CONTRIBUTORS, ','), github.actor)
+      contains(env.TRUSTED_CONTRIBUTORS, github.actor)
     permissions:
       packages: write
       contents: read
