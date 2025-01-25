@@ -4,11 +4,10 @@ on:
   push:
     paths:
       - '**'
-    paths-ignore:
-      - 'README.md'
-      - '.github/**/*.md'
-      - '.github/workflows/**'
-      - '.env.example'
+      - '!README.md'
+      - '!.github/**/*.md'
+      - '!.github/workflows/**'
+      - '!.env.example'
 
 env:
   REGISTRY: index.docker.io
