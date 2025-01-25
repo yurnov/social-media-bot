@@ -18,11 +18,7 @@ jobs:
   push_to_registry:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
-    env:
-      TRUSTED_CONTRIBUTORS: ${{ secrets.TRUSTED_CONTRIBUTORS }}
-    if: >
-      github.event_name == 'push' ||
-      contains(env.TRUSTED_CONTRIBUTORS, github.actor)
+
     permissions:
       packages: write
       contents: read
@@ -31,6 +27,20 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
+
+      - name: Check if user is trusted
+        env:
+          TRUSTED_CONTRIBUTORS: ${{ secrets.TRUSTED_CONTRIBUTORS }}
+        run: |
+          IFS=',' read -ra USERS <<< "$TRUSTED_CONTRIBUTORS"
+          for user in "${USERS[@]}"; do
+            if [[ "${{ github.actor }}" == "${user// /}" ]]; then
+              echo "User ${{ github.actor }} is trusted"
+              exit 0
+            fi
+          done
+          echo "Error: User ${{ github.actor }} is not in trusted contributors list"
+          exit 1
 
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
