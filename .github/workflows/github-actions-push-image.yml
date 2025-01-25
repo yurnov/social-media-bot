@@ -16,12 +16,13 @@ env:
 
 jobs:
   push_to_registry:
-    if: >
-      github.event_name == 'push' ||
-      github.event.pull_request.head.repo.full_name == github.repository ||
-      contains(split(${{ secrets.TRUSTED_CONTRIBUTORS }}, ','), github.event.pull_request.user.login)
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
+    env:
+      TRUSTED_CONTRIBUTORS: ${{ secrets.TRUSTED_CONTRIBUTORS }}
+    if: >
+      github.event_name == 'push' ||
+      contains(split(env.TRUSTED_CONTRIBUTORS, ','), github.actor)
     permissions:
       packages: write
       contents: read
