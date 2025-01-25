@@ -8,7 +8,7 @@ from typing import Optional
 
 allowed_usernames = [x.strip() for x in os.getenv("ALLOWED_USERNAMES", "").split(",") if x]
 allowed_chat_ids = [int(x) for x in os.getenv("ALLOWED_CHAT_IDS", "").split(",") if x]
-limit_bot_access = os.getenv("LIMIT_BOT_ACCESS")
+limit_bot_access = os.getenv("LIMIT_BOT_ACCESS", "False")
 
 # Check if user or chat is not allowed. Returns True if not allowed, False if allowed
 def is_user_or_chat_not_allowed(username: Optional[str], chat_id: int) -> bool:
