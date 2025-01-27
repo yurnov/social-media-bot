@@ -16,7 +16,7 @@ load_dotenv()
 
 def load_responses():
     """Function loading bot responses based on language setting."""
-    language = os.getenv("LANGUAGE", "ua").lower()  # Default to Ukrainian if not set
+    language = os.getenv("LANGUAGE", "en").lower()  # Default to Ukrainian if not set
 
     filename = "responses_ua.json" if language == "ua" else "responses_en.json"
     try:
