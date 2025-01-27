@@ -14,4 +14,7 @@ COPY src /bot
 
 WORKDIR /bot
 
+# https://stackoverflow.com/questions/58701233/docker-logs-erroneously-appears-empty-until-container-stops
+ENV PYTHONUNBUFFERED=1
+
 CMD ["python", "main.py"]
