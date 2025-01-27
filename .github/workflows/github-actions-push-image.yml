@@ -6,7 +6,7 @@ on:
       - '**'
       - '!README.md'
       - '!.github/**/*.md'
-      - '!.github/workflows/**'
+      # - '!.github/workflows/**'
       - '!.env.example'
 
 env:
@@ -64,11 +64,12 @@ jobs:
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
 
-      - name: Restart service
+      - name: Push changes
         run: |
           wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -O /usr/local/bin/cloudflared &&
           chmod +x /usr/local/bin/cloudflared &&
           mkdir ~/.ssh/ &&
           echo "${{ secrets.GIT_PRIVATE_KEY }}" > ~/.ssh/id_ed25519 &&
           chmod 600 ~/.ssh/id_ed25519 &&
-          ssh -o "StrictHostKeyChecking no" -o ProxyCommand="/usr/local/bin/cloudflared access ssh --hostname %h" -i ~/.ssh/id_ed25519 ${{ secrets.GIT_USERNAME }}@${{ secrets.GIT_REMOTE_HOST }} sudo systemctl restart ${{ secrets.GIT_REMOTE_SERVICE }}
+          git remote add ${{ secrets.GIT_USERNAME }} ${{ secrets.GIT_USERNAME }}@${{ secrets.GIT_REMOTE_HOST }}:${{ secrets.GIT_REMOTE_SERVICE }} &&
+          GIT_SSH_COMMAND='ssh -o "StrictHostKeyChecking no" -o ProxyCommand="/usr/local/bin/cloudflared access ssh --hostname %h" -i ~/.ssh/id_ed25519' git push ${{ secrets.GIT_USERNAME }}
