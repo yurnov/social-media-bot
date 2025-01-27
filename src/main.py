@@ -3,6 +3,7 @@
 import os
 import random
 import json
+from functools import lru_cache
 from dotenv import load_dotenv
 from telegram import Update
 from telegram.error import TimedOut, NetworkError, TelegramError
@@ -14,6 +15,8 @@ from permissions import is_user_or_chat_not_allowed, supported_sites
 
 load_dotenv()
 
+# Cache responses from JSON file
+@lru_cache(maxsize=1)
 def load_responses():
     """Function loading bot responses based on language setting."""
     language = os.getenv("LANGUAGE", "en").lower()  # Default to Ukrainian if not set
@@ -29,6 +32,8 @@ def load_responses():
             "Sorry, I'm having trouble loading my responses right now! 😅",
             "Вибачте, у мене проблеми із завантаженням відповідей! 😅"
         ]
+
+responses = load_responses()
 
 
 def spoiler_in_message(entities):
@@ -60,7 +65,6 @@ def spoiler_in_message(entities):
     return False
 
 
-responses = load_responses()
 
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  # pylint: disable=unused-argument
