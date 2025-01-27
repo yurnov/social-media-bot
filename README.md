@@ -13,7 +13,7 @@ This guide provides step-by-step instructions to install and run the Video Downl
 ## Deploy with Docker
 
 
-Edit `.env` file with your secrets and run the container.
+Edit `.env` file with your secrets and run the container. Use `.env.example` as a reference.
 
 ```
 docker build . -t downloader-bot:latest

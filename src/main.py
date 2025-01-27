@@ -15,10 +15,20 @@ from permissions import is_user_or_chat_not_allowed, supported_sites
 load_dotenv()
 
 def load_responses():
-    """Function loading bot responses."""
-    with open("responses.json", "r", encoding="utf-8") as file:
-        data = json.load(file)
-    return data["responses"]
+    """Function loading bot responses based on language setting."""
+    language = os.getenv("LANGUAGE", "ua").lower()  # Default to Ukrainian if not set
+
+    filename = "responses_ua.json" if language == "ua" else "responses_en.json"
+    try:
+        with open(filename, "r", encoding="utf-8") as file:
+            data = json.load(file)
+            return data["responses"]
+    except FileNotFoundError:
+        # Return a minimal set of responses if no response files found
+        return [
+            "Sorry, I'm having trouble loading my responses right now! 😅",
+            "Вибачте, у мене проблеми із завантаженням відповідей! 😅"
+        ]
 
 
 def spoiler_in_message(entities):
@@ -84,8 +94,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
 
     message_text = update.message.text.strip()
 
+    # handle bot_health message. Provide Eng responses. TODO: add more responses
     # Handle bot mention response
-    if "ботяра" in message_text.lower():
+    if "ботяра" in message_text.lower() or "bot_health" in message_text.lower():
         await update.message.reply_text(random.choice(responses))
         return
 
