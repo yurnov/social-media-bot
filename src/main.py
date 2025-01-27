@@ -94,7 +94,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
 
     message_text = update.message.text.strip()
 
-    # handle bot_health message. Provide Eng responses. TODO: add more responses
     # Handle bot mention response
     if "ботяра" in message_text.lower() or "bot_health" in message_text.lower():
         await update.message.reply_text(random.choice(responses))
