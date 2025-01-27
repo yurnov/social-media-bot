@@ -63,25 +63,3 @@ jobs:
           subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
-
-  push_to_remote:
-    name: Push changes to remote repository
-    needs: push_to_registry
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Check out the repo
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: '0'
-        
-      - name: Push changes
-        run: |
-          wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -O /usr/local/bin/cloudflared &&
-          chmod +x /usr/local/bin/cloudflared &&
-          mkdir ~/.ssh/ &&
-          echo "${{ secrets.GIT_PRIVATE_KEY }}" > ~/.ssh/id_ed25519 &&
-          chmod 600 ~/.ssh/id_ed25519 &&
-          git remote add ${{ secrets.GIT_USERNAME }} ${{ secrets.GIT_USERNAME }}@${{ secrets.GIT_REMOTE_HOST }}:${{ secrets.GIT_REMOTE_SERVICE }} &&
-          GIT_SSH_COMMAND='ssh -o "StrictHostKeyChecking no" -o ProxyCommand="/usr/local/bin/cloudflared access ssh --hostname %h" -i ~/.ssh/id_ed25519' git push ${{ secrets.GIT_USERNAME }}
