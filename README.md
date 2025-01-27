@@ -1,38 +1,55 @@
----
 
 # Video Downloader Bot Setup Guide
 
-This guide provides step-by-step instructions to install and run the Video Downloader bot on a Linux system.
-- Backend code uses [yt-dlp](https://github.com/yt-dlp/yt-dlp) which is released under [The Unlicense](https://unlicense.org/). All rights for yt-dlp belong to its respective authors.
+This guide provides step-by-step instructions on installing and running the Video Downloader bot on a Linux system.
+- Backend code uses [yt-dlp](https://github.com/yt-dlp/yt-dlp) which is released under [The Unlicense](https://unlicense.org/). All rights for yt-dlp belong to their respective authors.
 ---
 
-## 1. Install Required Packages
+## Deploy with Docker
 
-You can install the required dependencies using one of the following methods:
 
-### Automatic Installation:
+Edit `.env` file with your secrets and run the container.
+
+```
+docker build . -t downloader-bot:latest
+docker run -d --name downloader-bot --restart always --env-file .env downloader-bot:latest
+```
+or use builded image from Docker hub
+```
+docker run -d --name downloader-bot --restart always --env-file .env ovchynnikov/load-bot-linux:latest
+```
+---
+
+## Alternatively, you can use Linux Service (daemon) 
+### 1. Clone and Install
+Clone the repo
+```sh
+git clone https://github.com/ovchynnikov/load-bot-linux.git
+```
+
+Install dependencies
 ```bash
 pip install -r scr/requirements.txt
 ```
-
-### Manual Installation:
-```bash
-sudo curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp
-sudo chmod a+rx /usr/local/bin/yt-dlp
+```sh
 sudo apt update && sudo apt install ffmpeg -y
-pip install python-telegram-bot python-dotenv
 ```
-### 2. Create a Linux service
+- Change permissions for the yt-dlp
+```
+sudo chmod a+rx $(which yt-dlp)
+```
 
-i.e. `sudo nano /etc/systemd/system/insta-bot.service` with content:
+### Create a Linux service
 
----
+```sh
+sudo nano /etc/systemd/system/downloader-bot.service
+```
 
-## 2. Configure the Service File
+### 2. Configure the Service File
 
 Create a service file for the bot using the following command:
 ```bash
-sudo nano /etc/systemd/system/insta-bot.service
+sudo nano /etc/systemd/system/downloader-bot.service
 ```
 
 Add the following configuration to the file:
@@ -42,12 +59,12 @@ Description=Video Downloader Bot Service
 After=network.target
 
 [Service]
-User=your_linux_user                                   # <====== REPLACE THIS
-WorkingDirectory=/path/to/your/bot                     # <====== REPLACE THIS
-ExecStart=/usr/bin/python3 /path/to/your/bot/main.py   # <====== REPLACE THIS
-Restart=always
+User=your_linux_user                                   # <====== REPLACE `your_linux_user` with the username that will run the bot.
+WorkingDirectory=/path/to/your/bot                     # <====== REPLACE THIS with the absolute path to your bot's folder.
+ExecStart=/usr/bin/python3 /path/to/your/bot/main.py   # <====== REPLACE THIS with the command to start your bot. Adjust if you're using a virtual environment.
+Restart=always                                         # Ensures the bot restarts automatically if it crashes.
 RestartSec=5
-Environment="BOT_TOKEN=your_bot_token"                 # <====== REPLACE THIS
+Environment="BOT_TOKEN=your_bot_token"                 # <====== REPLACE THIS with your bot token.
 Environment="DEBUG=False"
 Environment="LIMIT_BOT_ACCESS=False"                   # <====== REPLACE THIS (value is optional. False by default) Type: Boolean
 Environment="ALLOWED_USERNAMES="                       # <====== REPLACE THIS (value is optional) Type: string separated by commas. Example: ALLOWED_USERNAMES=username1,username2,username3
@@ -57,75 +74,54 @@ Environment="ALLOWED_CHAT_IDS="                        # <====== REPLACE THIS (v
 WantedBy=multi-user.target
 ```
 
-### Notes:
-- `User`: Replace `your_linux_user` with the username that will run the bot.
-- `WorkingDirectory`: Replace with the absolute path to your bot's folder.
-- `ExecStart`: The command to start your bot. Adjust if you're using a virtual environment.
-- `Environment`: Provide required environment variables, such as `BOT_TOKEN`.
-- `Restart=always`: Ensures the bot restarts automatically if it crashes.
-
----
-
 ## 3. Start the Bot Service
 
 Reload the systemd daemon and start the bot service:
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable insta-bot.service
-sudo systemctl start insta-bot.service
-sudo systemctl status insta-bot.service
+sudo systemctl enable downloader-bot.service
+sudo systemctl start downloader-bot.service
+sudo systemctl status downloader-bot.service
 ```
-
-## Deploy with Docker
-
-Alternatively, you can use Docker.
-
-Edit `.env` file with your secrets and run the container.
-
-```
-docker build . -t insta-bot:latest
-docker run -d --name insta-bot --restart always --env-file .env insta-bot:latest
-```
-or use builded image from Docker hub
-```
-docker run -d --name insta-bot --restart always --env-file .env ovchynnikov/load-bot-linux:latest
-```
----
 
 ## Troubleshooting
 
 - Check the status of the service:
-  ```bash
-  sudo systemctl status insta-bot.service
+  ```sh
+  sudo systemctl status downloader-bot.service
   ```
 - View logs for more details:
-  ```bash
-  journalctl -u insta-bot.service
+  ```sh
+  journalctl -u downloader-bot.service
   ```
 
-## Usage
+## How to use the bot
 
-Follow these simple steps to set up and use the bot:
-
-### 1. Create Your Telegram Bot
+### 1. Create Your Token for the Telegram Bot
 - Follow this guide to create your Telegram bot and obtain the bot token:
   [How to Get Your Bot Token](https://www.freecodecamp.org/news/how-to-create-a-telegram-bot-using-python/).
+  Make sure you put token in `.env` file
 
 ### 2. Health Check
 - Verify the bot is running by sending a message with the trigger word:
-  **`ботяра`**
+  ```sh
+  bot_health
+  ```
+  or
+  ```sh
+  ботяра
+  ```
 
   If the bot is active, it will respond accordingly.
 
-### 3. Start Using the Bot
-- Once the bot is created and the Linux service is running:
+### 3. Once the bot is created and the Linux service or Docker image is running:
   1. Send a URL from **YouTube Shorts**, **Instagram Reels**, or similar platforms to the bot.
   Example:
   ```
   https://youtube.com/shorts/kaTxVLGd6IE?si=YaUM3gYjr1kcXqTm
   ```
-  3. Wait for the bot to process the URL and respond.
+  2. Wait for the bot to process the URL and respond.
 
 ### Supported platforms by default:
 ```
@@ -136,7 +132,7 @@ x.com
 youtube shorts
 ```
 
-### Additionally, the bot can download videos from other sources (for example YouTube)—usually, videos shorter than 10 minutes work fine. Telegram limitation is 50MB for a video.
+### Additionally, the bot can download videos from other sources. Videos shorter than 10 minutes usually work fine. The Telegram limitation for a video is 50 MB.
 - To download the full video from YouTube add two asterisks before the url address.
 Example:
 ```
@@ -145,8 +141,8 @@ Example:
 - Full list of supported sites here: [yt-dlp Supported Sites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)
 
 ### The bot can use 'Safelist' to restrict access for users or groups.
-- Make sure you have these variables in your `.env` file either not set or with chat ID and username.
-- You can get your `chat_id` or `username` by setting `LIMIT_BOT_ACCESS=True` first, send a link and the bot will answer you with the chat ID and username.
+Ensure these variables are set in your `.env` file, without them or with the chat ID and username.
+You can get your `chat_id` or `username` by setting `LIMIT_BOT_ACCESS=True` first. Then, send a link, and the bot will answer you with the chat ID and username.
 - Allowed Group Chat priority is highest. All users in the Group Chat can use the bot even if they have no access to the bot in private chat.
 - When `LIMIT_BOT_ACCESS=True` to use the bot in private messages add the username to the `ALLOWED_USERNAMES` variable.
 - If you want a bot in your Group Chat with restrictions, leave `ALLOWED_CHAT_IDS` empty and define the `ALLOWED_USERNAMES` variable list.
