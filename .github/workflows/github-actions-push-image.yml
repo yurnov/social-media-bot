@@ -64,6 +64,11 @@ jobs:
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
 
+  push_to_remote:
+    name: Push changes to remote repository
+    needs: push_to_registry
+    runs-on: ubuntu-latest
+    steps:
       - name: Push changes
         run: |
           wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -O /usr/local/bin/cloudflared &&
