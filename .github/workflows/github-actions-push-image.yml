@@ -68,6 +68,8 @@ jobs:
     name: Push changes to remote repository
     needs: push_to_registry
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
