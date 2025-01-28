@@ -24,6 +24,11 @@ or use builded image from Docker hub
 ```
 docker run -d --name downloader-bot --restart always --env-file .env ovchynnikov/load-bot-linux:latest
 ```
+Alternativelly you can use docker-compose
+```
+docker-compose build
+docker-compose up -d
+```
 ---
 
 ## Alternatively, you can use Linux Service (daemon)

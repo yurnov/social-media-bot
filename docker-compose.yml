@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: telegram-video-bot
+    env_file:
+      - .env
+    restart: unless-stopped
+    volumes:
+      - ./src:/app:cached  # Use bind mount for development
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
