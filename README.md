@@ -7,14 +7,14 @@
 [![Publish Docker image](https://github.com/ovchynnikov/load-bot-linux/actions/workflows/github-actions-push-image.yml/badge.svg)](https://github.com/ovchynnikov/load-bot-linux/actions/workflows/github-actions-push-image.yml)
 [![Push to Remote](https://github.com/ovchynnikov/load-bot-linux/actions/workflows/github-action-push-to-remote.yml/badge.svg)](https://github.com/ovchynnikov/load-bot-linux/actions/workflows/github-action-push-to-remote.yml)
 
-This guide provides step-by-step instructions to install and run the Video Downloader bot on a Linux system.
-- Backend code uses [yt-dlp](https://github.com/yt-dlp/yt-dlp) which is released under [The Unlicense](https://unlicense.org/). All rights for yt-dlp belong to its respective authors.
+This guide provides step-by-step instructions on installation and running the Video Downloader bot on a Linux system.
+- Backend code uses [yt-dlp](https://github.com/yt-dlp/yt-dlp) which is released under [The Unlicense](https://unlicense.org/). All rights for yt-dlp belong to their respective authors.
 ---
 
 ## Deploy with Docker
 
 
-Edit `.env` file with your secrets and run the container. Use `.env.example` as a reference.
+Prerequisite: Edit `.env` file with your token and access configuration (optional). Use `.env.example` as a reference.
 
 ```
 docker build . -t downloader-bot:latest
@@ -24,7 +24,7 @@ or use builded image from Docker hub
 ```
 docker run -d --name downloader-bot --restart always --env-file .env ovchynnikov/load-bot-linux:latest
 ```
-Alternativelly you can use docker-compose
+Alternatively you can use docker-compose
 ```
 docker-compose build
 docker-compose up
