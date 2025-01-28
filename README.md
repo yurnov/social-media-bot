@@ -14,7 +14,7 @@ This guide provides step-by-step instructions on installation and running the Vi
 ## Deploy with Docker
 
 
-Prerequisite: Edit `.env` file with your token and access configuration (optional). Use `.env.example` as a reference.
+Prerequisite: Create `.env` file with your token and access configuration (optional). Use `.env.example` as a reference.
 
 ```
 docker build . -t downloader-bot:latest
