@@ -20,7 +20,7 @@ Prerequisite:
   ```sh
   git clone https://github.com/ovchynnikov/load-bot-linux.git
   ```
-3. Build and run the container
+Build and run the container
 ```
 docker build . -t downloader-bot:latest
 docker run -d --name downloader-bot --restart always --env-file .env downloader-bot:latest
