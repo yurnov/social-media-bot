@@ -3,7 +3,7 @@
 import os
 import random
 import json
-import logger import error, info
+from logger import error, info
 from functools import lru_cache
 from dotenv import load_dotenv
 from telegram import Update
