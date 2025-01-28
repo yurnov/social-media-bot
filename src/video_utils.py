@@ -54,7 +54,7 @@ def compress_video(input_path):
         if os.path.exists(temp_output):
             os.replace(temp_output, input_path)
             debug(f"Compressed done. File saved: {input_path}")
-    except subprocess.CalledProcess as e:
+    except subprocess.CalledProcessError as e:
         error(f"Error while compressing: {e}")
 
 
