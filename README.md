@@ -26,7 +26,7 @@ docker run -d --name downloader-bot --restart always --env-file .env ovchynnikov
 ```
 ---
 
-## Alternatively, you can use Linux Service (daemon) 
+## Alternatively, you can use Linux Service (daemon)
 ### 1. Clone and Install
 Clone the repo
 ```sh
@@ -71,7 +71,7 @@ ExecStart=/usr/bin/python3 /path/to/your/bot/main.py   # <====== REPLACE THIS wi
 Restart=always                                         # Ensures the bot restarts automatically if it crashes.
 RestartSec=5
 Environment="BOT_TOKEN=your_bot_token"                 # <====== REPLACE THIS with your bot token.
-Environment="DEBUG=False"
+Environment="LOG_LEVEL=INFO"
 Environment="LIMIT_BOT_ACCESS=False"                   # <====== REPLACE THIS (value is optional. False by default) Type: Boolean
 Environment="ALLOWED_USERNAMES="                       # <====== REPLACE THIS (value is optional) Type: string separated by commas. Example: ALLOWED_USERNAMES=username1,username2,username3
 Environment="ALLOWED_CHAT_IDS="                        # <====== REPLACE THIS (value is optional) Type: string separated by commas  Example: ALLOWED_CHAT_IDS=12349,12345,123456

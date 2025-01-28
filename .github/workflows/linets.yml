@@ -27,7 +27,7 @@ jobs:
           python -m pip install pylint black
       - name: Lint Python code with black
         run: |
-          black --diff --skip-string-normalization --line-length 120 src/
+          black --check --diff --skip-string-normalization --line-length 120 src/
       - name: Lint Python code with Pylint
         run: |
           cd src/

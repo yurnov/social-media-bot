@@ -3,17 +3,18 @@
 import os
 import random
 import json
+from logger import error, info
 from functools import lru_cache
 from dotenv import load_dotenv
 from telegram import Update
 from telegram.error import TimedOut, NetworkError, TelegramError
 from telegram.ext import Application, MessageHandler, filters, ContextTypes
 from telegram.constants import MessageEntityType
-from logger import print_logs
 from video_utils import compress_video, download_video, cleanup_file
 from permissions import is_user_or_chat_not_allowed, supported_sites
 
 load_dotenv()
+
 
 # Cache responses from JSON file
 @lru_cache(maxsize=1)
@@ -30,8 +31,9 @@ def load_responses():
         # Return a minimal set of responses if no response files found
         return [
             "Sorry, I'm having trouble loading my responses right now! 😅",
-            "Вибачте, у мене проблеми із завантаженням відповідей! 😅"
+            "Вибачте, у мене проблеми із завантаженням відповідей! 😅",
         ]
+
 
 responses = load_responses()
 
@@ -63,8 +65,6 @@ def spoiler_in_message(entities):
             if entity.type == MessageEntityType.SPOILER:
                 return True
     return False
-
-
 
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  # pylint: disable=unused-argument
@@ -152,7 +152,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
                     read_timeout=8000,
                 )
         except TimedOut as e:
-            print_logs(f"Telegram timeout while sending video. {e}")
+            error(f"Telegram timeout while sending video. {e}")
         except (NetworkError, TelegramError):
             await update.message.reply_text(
                 (
@@ -197,7 +197,7 @@ def main():
     bot_token = os.getenv("BOT_TOKEN")
     application = Application.builder().token(bot_token).build()
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-    print("Bot started. Ctrl+C to stop")
+    info("Bot started. Ctrl+C to stop")
     application.run_polling()
 
 
