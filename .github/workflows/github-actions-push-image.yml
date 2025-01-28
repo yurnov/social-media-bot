@@ -8,6 +8,8 @@ on:
       - '!.github/**/*.md'
       # - '!.github/workflows/**'
       - '!.env.example'
+    branches:
+      - 'main'
 
 env:
   REGISTRY: index.docker.io

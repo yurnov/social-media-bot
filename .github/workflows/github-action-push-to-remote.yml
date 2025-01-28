@@ -1,4 +1,4 @@
-name: Push to Remote Repository
+name: 🔃 Push to Remote Repository
 
 on:
   workflow_dispatch:  # Allows manual triggering
@@ -8,6 +8,8 @@ on:
       - '!README.md'
       - '!.github/**/*.md'
       - '!.env.example'
+    branches:
+      - 'main'
 
 jobs:
   push_to_remote:
@@ -20,7 +22,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: '0'
-        
+
       - name: Push changes
         run: |
           wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -O /usr/local/bin/cloudflared &&
