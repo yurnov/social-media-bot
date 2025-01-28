@@ -17,6 +17,7 @@ def is_user_or_chat_not_allowed(username: Optional[str], chat_id: int) -> bool:
 
     Args:
         username: Telegram username to check
+        chat: Telegram chat ID to check
 
     Returns:
         True if neither user nor chat is allowed, False if either is allowed

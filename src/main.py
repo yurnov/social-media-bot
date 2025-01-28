@@ -100,16 +100,21 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
 
     # Handle bot mention response
     if "ботяра" in message_text.lower() or "bot_health" in message_text.lower():
-        await update.message.reply_text(random.choice(responses))
+        await update.message.reply_text(
+            f"{random.choice(responses)}\n"
+            f"[Chat ID]: {update.effective_chat.id}\n"
+            f"[Username]: {update.effective_user.username}"
+        )
         return
 
     # Check if user is not allowed
     if is_user_or_chat_not_allowed(update.effective_user.username, update.effective_chat.id):
-        await update.message.reply_text(
-            f"You are not allowed to use this bot. "
-            f"Your username is {update.effective_user.username} "
-            f"and chat id is {update.effective_chat.id}"
-        )
+        if update.effective_chat.type == "private":
+            await update.message.reply_text(
+                f"You are not allowed to use this bot. "
+                f"Your username is {update.effective_user.username} "
+                f"and chat id is {update.effective_chat.id}"
+            )
         return
 
     # Handle Instagram stories
