@@ -19,6 +19,8 @@ LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 if LOG_LEVEL.lower() not in ["debug", "info", "warning", "error", "critical"]:
     logger.warning("LOG_LEVEL is not correct. Defaulting to INFO")
     LOG_LEVEL = "INFO"
+else:
+    logger.info(f"Setting log level to {LOG_LEVEL.upper()}")
 
 # Set the user-defined log level
 logger.setLevel(LOG_LEVEL.upper())
