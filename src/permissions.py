@@ -10,6 +10,7 @@ allowed_usernames = [x.strip() for x in os.getenv("ALLOWED_USERNAMES", "").split
 allowed_chat_ids = [int(x) for x in os.getenv("ALLOWED_CHAT_IDS", "").split(",") if x]
 limit_bot_access = os.getenv("LIMIT_BOT_ACCESS", "False")
 
+
 # Check if user or chat is not allowed. Returns True if not allowed, False if allowed
 def is_user_or_chat_not_allowed(username: Optional[str], chat_id: int) -> bool:
     """Check if username or chat_id is not in the allowed lists.
@@ -30,6 +31,7 @@ def is_user_or_chat_not_allowed(username: Optional[str], chat_id: int) -> bool:
 
     # Otherwise check if username is allowed
     return username not in allowed_usernames
+
 
 supported_sites = [
     "**https://",
