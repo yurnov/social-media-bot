@@ -35,6 +35,7 @@ def is_user_or_chat_not_allowed(username: Optional[str], chat_id: int) -> bool:
 
 supported_sites = [
     "**https://",
+    "facebook.com/",
     "instagram.com/",
     "tiktok.com/",
     "reddit.com/",
