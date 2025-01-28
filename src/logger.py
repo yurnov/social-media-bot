@@ -24,3 +24,9 @@ else:
 
 # Set the user-defined log level
 logger.setLevel(LOG_LEVEL.upper())
+# Export the logger instance directly
+debug = logger.debug
+info = logger.info
+warning = logger.warning
+error = logger.error
+critical = logger.critical
