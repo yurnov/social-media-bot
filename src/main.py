@@ -3,24 +3,24 @@
 import os
 import random
 import json
-from logger import error, info
 from functools import lru_cache
 from dotenv import load_dotenv
 from telegram import Update
 from telegram.error import TimedOut, NetworkError, TelegramError
 from telegram.ext import Application, MessageHandler, filters, ContextTypes
 from telegram.constants import MessageEntityType
+from logger import error, info
 from video_utils import compress_video, download_video, cleanup_file
 from permissions import is_user_or_chat_not_allowed, supported_sites
 
 load_dotenv()
 
+language = os.getenv("LANGUAGE", "ua").lower()  # Default to Ukrainian if not set
 
 # Cache responses from JSON file
 @lru_cache(maxsize=1)
 def load_responses():
     """Function loading bot responses based on language setting."""
-    language = os.getenv("LANGUAGE", "ua").lower()  # Default to Ukrainian if not set
 
     filename = "responses_ua.json" if language == "ua" else "responses_en.json"
     try:
@@ -83,7 +83,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
         - If the message contains "ботяра" (case insensitive), responds with a random response
           from a predefined list.
         - If the message contains an Instagram Stories URL, informs the user that login is required.
-        - If the message contains a supported URL (Instagram Reels, Youtube Shorts, TikTok, Reddit, X/Twitter):
+        - If the message contains a supported URL (Instagram Reels, Facebook Reels, Youtube Shorts, TikTok, Reddit, X/Twitter):
             - Downloads and optionally compresses the video
             - Sends the video back to the user via Telegram
             - Preserves spoiler tags if present in original message
@@ -114,13 +114,20 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
 
     # Handle Instagram stories
     if "instagram.com/stories/" in message_text:
-        await update.message.reply_text("Сторіз не можу скачати. Треба логін")
+        if language == "ua":
+            await update.message.reply_text("Сторіз не можу скачати.")
+        else:
+            await update.message.reply_text("Instagram stories not supported.")
         return
 
     message_text = message_text.replace("** ", "**")
 
     # Check if URL is from a supported site
     if not any(site in message_text for site in supported_sites):
+        if language == "ua":
+            await update.message.reply_text("Цей сайт не підтримується. Спробуйте додати ** перед URL")
+        else:
+            await update.message.reply_text("This site is not supported. Try adding ** before the URL")
         return
 
     try:
@@ -152,7 +159,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
                     read_timeout=8000,
                 )
         except TimedOut as e:
-            error(f"Telegram timeout while sending video. {e}")
+            error("Telegram timeout while sending video. %s", e)
         except (NetworkError, TelegramError):
             await update.message.reply_text(
                 (

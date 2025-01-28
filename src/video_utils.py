@@ -5,8 +5,8 @@ import os
 import shutil
 import subprocess
 import tempfile
-from logger import debug, error
 from dotenv import load_dotenv
+from logger import debug, error
 
 load_dotenv()
 
@@ -53,9 +53,9 @@ def compress_video(input_path):
         subprocess.run(command, check=True)
         if os.path.exists(temp_output):
             os.replace(temp_output, input_path)
-            debug(f"Compressed done. File saved: {input_path}")
+            debug("Compressed done. File saved: %s", input_path)
     except subprocess.CalledProcessError as e:
-        error(f"Error while compressing: {e}")
+        error("Error while compressing: %s", e)
 
 
 def get_video_duration(video_path):
@@ -76,7 +76,7 @@ def get_video_duration(video_path):
         result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
         return float(result.stdout.strip())
     except (subprocess.CalledProcessError, ValueError) as e:
-        error(f"Error getting video duration: {e}")
+        error("Error getting video duration: %s", e)
         return None
 
 
@@ -115,13 +115,13 @@ def download_video(url):
                 return os.path.join(temp_dir, filename)
         return None
     except subprocess.CalledProcessError as e:
-        error(f"Error downloading video: {e}")
+        error("Error downloading video: %s", e)
         return None
     except subprocess.TimeoutExpired as e:
-        error(f"Download process timed out: {e}")
+        error("Download process timed out: %s", e)
         return None
     except (OSError, IOError) as e:
-        error(f"File system error occurred: {e}")
+        error("File system error occurred: %s", e)
         return None
 
 
@@ -138,9 +138,9 @@ def cleanup_file(video_path):
     Logs:
         Logs messages about the deletion process or any errors encountered.
     """
-    debug(f"Video to delete {video_path}")
+    debug("Video to delete %s", video_path)
     try:
         shutil.rmtree(os.path.dirname(video_path))
-        debug(f"Video deleted {video_path}")
+        debug("Video deleted %s", video_path)
     except (OSError, IOError) as cleanup_error:
-        error(f"Error deleting file: {cleanup_error}")
+        error("Error deleting file: %s", cleanup_error)

@@ -20,10 +20,12 @@ if LOG_LEVEL.lower() not in ["debug", "info", "warning", "error", "critical"]:
     logger.warning("LOG_LEVEL is not correct. Defaulting to INFO")
     LOG_LEVEL = "INFO"
 else:
-    logger.info(f"Setting log level to {LOG_LEVEL.upper()}")
+    # Use lazy % formatting in logging functions (PylintW1203:logging-fstring-interpolation)
+    logger.info("Setting log level to %s", LOG_LEVEL.upper())
 
 # Set the user-defined log level
 logger.setLevel(LOG_LEVEL.upper())
+
 # Export the logger instance directly
 debug = logger.debug
 info = logger.info

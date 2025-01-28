@@ -14,8 +14,13 @@ This guide provides step-by-step instructions on installation and running the Vi
 ## Deploy with Docker
 
 
-Prerequisite: Create `.env` file with your token and access configuration (optional). Use `.env.example` as a reference.
-
+Prerequisite: 
+1. Create `.env` file with your token and access configuration (optional). Use `.env.example` as a reference.
+2. Clone the repo
+  ```sh
+  git clone https://github.com/ovchynnikov/load-bot-linux.git
+  ```
+3. Build and run the container
 ```
 docker build . -t downloader-bot:latest
 docker run -d --name downloader-bot --restart always --env-file .env downloader-bot:latest
