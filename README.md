@@ -27,7 +27,7 @@ docker run -d --name downloader-bot --restart always --env-file .env ovchynnikov
 Alternativelly you can use docker-compose
 ```
 docker-compose build
-docker-compose up -d
+docker-compose up
 ```
 ---
 
