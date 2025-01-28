@@ -3,7 +3,7 @@
 import os
 import random
 import json
-import logger
+import logger import error, info
 from functools import lru_cache
 from dotenv import load_dotenv
 from telegram import Update
@@ -152,7 +152,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
                     read_timeout=8000,
                 )
         except TimedOut as e:
-            logger.logger.error(f"Telegram timeout while sending video. {e}")
+            error(f"Telegram timeout while sending video. {e}")
         except (NetworkError, TelegramError):
             await update.message.reply_text(
                 (
@@ -197,7 +197,7 @@ def main():
     bot_token = os.getenv("BOT_TOKEN")
     application = Application.builder().token(bot_token).build()
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-    logger.logger.info("Bot started. Ctrl+C to stop")
+    info("Bot started. Ctrl+C to stop")
     application.run_polling()
 
 
