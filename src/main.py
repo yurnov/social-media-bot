@@ -16,6 +16,8 @@ from permissions import is_user_or_chat_not_allowed, supported_sites
 load_dotenv()
 
 language = os.getenv("LANGUAGE", "ua").lower()  # Default to Ukrainian if not set
+
+
 # Cache responses from JSON file
 @lru_cache(maxsize=1)
 def load_responses():
