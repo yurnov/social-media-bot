@@ -112,8 +112,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
     if is_user_or_chat_not_allowed(update.effective_user.username, update.effective_chat.id):
         if update.effective_chat.type == "private":
             await update.message.reply_text(
-                f"You are not allowed to use this bot. "
-                f"[Username]:  {update.effective_user.username} "
+                f"You are not allowed to use this bot.\n "
+                f"[Username]:  {update.effective_user.username}\n "
                 f"[Chat ID]: {update.effective_chat.id}"
             )
         return
