@@ -141,7 +141,7 @@ sudo systemctl status downloader-bot.service
   ```
   Wait for the bot to process the URL and respond.
 
-## Supported platforms by default:
+## Supported platforms by default
 ```
 instagram reels
 facebook reels
@@ -151,19 +151,20 @@ x.com
 youtube shorts
 ```
 
-### Ho to download videos from other sources.
+### Download videos from other sources.
 Videos shorter than 10 minutes usually work fine. The Telegram limitation for a video is 50 MB.
 - To download the full video from YouTube add two asterisks before the url address.
 Example:
 ```
   **https://www.youtube.com/watch?v=rxdu3whDVSM or with a space ** https://www.youtube.com/watch?v=rxdu3whDVSM
 ```
+The expected waiting time for videos up to 10 minutes is 3-10 minutes depending on the internet speed.
 - Full list of supported sites here: [yt-dlp Supported Sites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)
 
 ## Access Control with Safe List
 The bot can use 'Safelist' to restrict access for users or groups.
 Ensure these variables are set in your `.env` file, without them or with the chat ID and username.
-You can get your `chat_id` and `username` by setting `LIMIT_BOT_ACCESS=True` first. Then, send a word `bot_health` or `ботяра`, and the bot will answer you with the chat ID and username.
+You can get your `chat_id` and `username` by setting `LIMIT_BOT_ACCESS=True` first. Then, send the word `bot_health` or `ботяра`, and the bot will answer you with the chat ID and username.
 - Allowed Group Chat priority is highest. All users in the Group Chat can use the bot even if they have no access to the bot in private chat.
 - When `LIMIT_BOT_ACCESS=True` to use the bot in private messages add the username to the `ALLOWED_USERNAMES` variable.
 - If you want a bot in your Group Chat with restrictions, leave `ALLOWED_CHAT_IDS` empty and define the `ALLOWED_USERNAMES` variable list.
