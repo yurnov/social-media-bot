@@ -139,7 +139,7 @@ sudo systemctl status downloader-bot.service
   ```
   2. Wait for the bot to process the URL and respond.
 
-### Supported platforms by default:
+## Supported platforms by default:
 ```
 instagram reels
 facebook reels
