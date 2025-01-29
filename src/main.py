@@ -133,10 +133,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
     message_text = message_text.replace("** ", "**")
 
     # Check if URL is from a supported site. Ignore if it's from a group or channel
-    if (
-        not any(site in message_text for site in supported_sites)
-        and update.effective_chat.type == "private"
-    ):
+    if not any(site in message_text for site in supported_sites) and update.effective_chat.type == "private":
         if language == "ua":
             await update.message.reply_text("Цей сайт не підтримується. Спробуйте додати ** перед https://")
         else:
