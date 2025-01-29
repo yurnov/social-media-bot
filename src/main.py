@@ -99,10 +99,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
 
     message_text = update.message.text.strip()
 
-    # Ignore if message doesn't contain http
-    if "http" not in message_text:
-        return
-
     # Handle bot mention response
     if "ботяра" in message_text.lower() or "bot_health" in message_text.lower():
         await update.message.reply_text(
@@ -110,6 +106,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
             f"[Chat ID]: {update.effective_chat.id}\n"
             f"[Username]: {update.effective_user.username}"
         )
+        return
+
+    # Ignore if message doesn't contain http
+    if "http" not in message_text:
         return
 
     # Check if user is not allowed
