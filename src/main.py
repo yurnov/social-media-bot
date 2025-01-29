@@ -99,6 +99,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
 
     message_text = update.message.text.strip()
 
+    # Ignore if message doesn't contain http
+    if "http" not in message_text:
+        return
+
     # Handle bot mention response
     if "ботяра" in message_text.lower() or "bot_health" in message_text.lower():
         await update.message.reply_text(
@@ -128,18 +132,16 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
 
     message_text = message_text.replace("** ", "**")
 
-    # Check if URL is from a supported site
-    if (not any(site in message_text for site in supported_sites) and 
-        update.effective_chat.type == "private" and "http" in message_text):
+    # Check if URL is from a supported site. Ignore if it's from a group or channel
+    if (
+        not any(site in message_text for site in supported_sites)
+        and update.effective_chat.type == "private"
+    ):
         if language == "ua":
-            await update.message.reply_text(
-                "Цей сайт не підтримується. Спробуйте додати ** перед https://"
-            )
+            await update.message.reply_text("Цей сайт не підтримується. Спробуйте додати ** перед https://")
         else:
 
-            await update.message.reply_text(
-                "This site is not supported. Try adding ** before the https://"
-            )
+            await update.message.reply_text("This site is not supported. Try adding ** before the https://")
         return
     try:
         # Remove '**' prefix and any spaces if present
