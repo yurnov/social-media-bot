@@ -3,6 +3,10 @@ on:
   push:
     branches:
       - '*'
+    paths:
+      - 'src/**'
+      - '!README.md'
+      - '!.env.example'
   pull_request:
     branches:
       - '*'
