@@ -15,7 +15,7 @@ This guide provides step-by-step instructions on installation and running the Vi
 
 
 Prerequisites: 
-  1. Create `.env` file with your token and access configuration (optional). Use `.env.example` as a reference.
+  1. Create `.env` file in the project root folder with your token (mandatory) and access configuration (optional). Use `.env.example` as a reference.
   2. Clone the repo
   ```sh
     git clone https://github.com/ovchynnikov/load-bot-linux.git
@@ -23,6 +23,8 @@ Prerequisites:
 Build and run the container
 ```
 docker build . -t downloader-bot:latest
+```
+```
 docker run -d --name downloader-bot --restart always --env-file .env downloader-bot:latest
 ```
 or use builded image from Docker hub
@@ -32,11 +34,13 @@ docker run -d --name downloader-bot --restart always --env-file .env ovchynnikov
 Alternatively, you can use docker-compose
 ```
 docker-compose build
+```
+```
 docker-compose up
 ```
 ---
 
-## Alternatively, you can use Linux Service (daemon)
+## Deploy with Linux Service (daemon)
 ### 1. Clone and Install
 Clone the repo
 ```sh
@@ -96,8 +100,14 @@ Reload the systemd daemon and start the bot service:
 
 ```bash
 sudo systemctl daemon-reload
+```
+```bash
 sudo systemctl enable downloader-bot.service
+```
+```bash
 sudo systemctl start downloader-bot.service
+```
+```bash
 sudo systemctl status downloader-bot.service
 ```
 
@@ -132,12 +142,12 @@ sudo systemctl status downloader-bot.service
   If the bot is active, it will respond accordingly.
 
 ### 3. Once the bot is created and the Linux service or Docker image is running:
-  1. Send a URL from **YouTube Shorts**, **Instagram Reels**, or similar platforms to the bot.
+  Send a URL from **YouTube Shorts**, **Instagram Reels**, or similar platforms to the bot.
   Example:
   ```
   https://youtube.com/shorts/kaTxVLGd6IE?si=YaUM3gYjr1kcXqTm
   ```
-  2. Wait for the bot to process the URL and respond.
+  Wait for the bot to process the URL and respond.
 
 ## Supported platforms by default:
 ```
