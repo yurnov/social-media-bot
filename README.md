@@ -116,12 +116,12 @@ sudo systemctl status downloader-bot.service
 
 ## How to use the bot
 
-### 1. Create Your Token for the Telegram Bot
+ 1. Create Your Token for the Telegram Bot
 - Follow this guide to create your Telegram bot and obtain the bot token:
   [How to Get Your Bot Token](https://www.freecodecamp.org/news/how-to-create-a-telegram-bot-using-python/).
   Make sure you put token in `.env` file
 
-### 2. Health Check
+ 2. Health Check
 - Verify the bot is running by sending a message with the trigger word:
   ```sh
   bot_health
@@ -133,7 +133,7 @@ sudo systemctl status downloader-bot.service
 
   If the bot is active, it will respond accordingly.
 
-### 3. Once the bot is created and the Linux service or Docker image is running:
+ 3. Once the bot is created and the Linux service or Docker image is running:
   Send a URL from **YouTube Shorts**, **Instagram Reels**, or similar platforms to the bot.
   Example:
   ```
