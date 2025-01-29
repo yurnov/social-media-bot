@@ -41,34 +41,26 @@ docker-compose up
 ---
 
 ## Deploy with Linux Service (daemon)
-### 1. Clone and Install
+ 1. Clone and Install
 Clone the repo
 ```sh
 git clone https://github.com/ovchynnikov/load-bot-linux.git
 ```
 
-Install dependencies
+ 2. Install dependencies
 ```bash
 pip install -r scr/requirements.txt
 ```
 ```sh
 sudo apt update && sudo apt install ffmpeg -y
 ```
-- Change permissions for the yt-dlp
+ 3. Change permissions for the yt-dlp
 ```
 sudo chmod a+rx $(which yt-dlp)
 ```
 
-### Create a Linux service
-
+ 4. Create and configure Linux service
 ```sh
-sudo nano /etc/systemd/system/downloader-bot.service
-```
-
-### 2. Configure the Service File
-
-Create a service file for the bot using the following command:
-```bash
 sudo nano /etc/systemd/system/downloader-bot.service
 ```
 
@@ -94,7 +86,7 @@ Environment="ALLOWED_CHAT_IDS="                        # <====== REPLACE THIS (v
 WantedBy=multi-user.target
 ```
 
-### 3. Start the Bot Service
+ 5. Start the Bot Service
 
 Reload the systemd daemon and start the bot service:
 
@@ -111,7 +103,7 @@ sudo systemctl start downloader-bot.service
 sudo systemctl status downloader-bot.service
 ```
 
-### 4. Troubleshooting
+ 6. Troubleshooting
 
 - Check the status of the service:
   ```sh
