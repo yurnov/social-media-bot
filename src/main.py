@@ -92,7 +92,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
             - Sends the video back to the user via Telegram.
             - Preserves any spoiler tags present in the original message.
             - Cleans up temporary files after sending the video.
-        - Handles various error cases with appropriate user feedback, ensuring a smooth user experience.
+        - Handles error cases with appropriate user feedback, ensuring a smooth user experience.
 
     Returns:
         None
@@ -145,7 +145,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
             else:
 
                 await update.message.reply_text("This site is not supported. Try adding ** before the https://")
-            return # Stop further execution after sending the reply
+            return  # Stop further execution after sending the reply
         else:
             return
 
