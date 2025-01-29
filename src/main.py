@@ -85,8 +85,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
         - If the message contains "ботяра" (case insensitive), responds with a random response
           from a predefined list of bot responses.
         - If the message contains an Instagram Stories URL, informs the user that downloading is not supported.
-        - If the message contains a supported URL 
-          (Instagram Reels, Facebook Reels, YouTube Shorts, 
+        - If the message contains a supported URL
+          (Instagram Reels, Facebook Reels, YouTube Shorts,
           TikTok, Reddit, X/Twitter):
             - Downloads and optionally compresses the video.
             - Sends the video back to the user via Telegram.
@@ -146,8 +146,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
 
                 await update.message.reply_text("This site is not supported. Try adding ** before the https://")
             return  # Stop further execution after sending the reply
-        else:
-            return
+        return
 
     try:
         # Remove '**' prefix and any spaces if present
