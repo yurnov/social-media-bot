@@ -14,11 +14,11 @@ This guide provides step-by-step instructions on installation and running the Vi
 ## Deploy with Docker
 
 
-Prerequisite: 
-1. Create `.env` file with your token and access configuration (optional). Use `.env.example` as a reference.
-2. Clone the repo
+Prerequisites: 
+  1. Create `.env` file with your token and access configuration (optional). Use `.env.example` as a reference.
+  2. Clone the repo
   ```sh
-  git clone https://github.com/ovchynnikov/load-bot-linux.git
+    git clone https://github.com/ovchynnikov/load-bot-linux.git
   ```
 Build and run the container
 ```
@@ -29,7 +29,7 @@ or use builded image from Docker hub
 ```
 docker run -d --name downloader-bot --restart always --env-file .env ovchynnikov/load-bot-linux:latest
 ```
-Alternatively you can use docker-compose
+Alternatively, you can use docker-compose
 ```
 docker-compose build
 docker-compose up
@@ -149,7 +149,8 @@ x.com
 youtube shorts
 ```
 
-### Additionally, the bot can download videos from other sources. Videos shorter than 10 minutes usually work fine. The Telegram limitation for a video is 50 MB.
+### Ho to download videos from other sources.
+Videos shorter than 10 minutes usually work fine. The Telegram limitation for a video is 50 MB.
 - To download the full video from YouTube add two asterisks before the url address.
 Example:
 ```
@@ -157,7 +158,8 @@ Example:
 ```
 - Full list of supported sites here: [yt-dlp Supported Sites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)
 
-### The bot can use 'Safelist' to restrict access for users or groups.
+## Access Control with Safe List
+The bot can use 'Safelist' to restrict access for users or groups.
 Ensure these variables are set in your `.env` file, without them or with the chat ID and username.
 You can get your `chat_id` and `username` by setting `LIMIT_BOT_ACCESS=True` first. Then, send a word `bot_health` or `ботяра`, and the bot will answer you with the chat ID and username.
 - Allowed Group Chat priority is highest. All users in the Group Chat can use the bot even if they have no access to the bot in private chat.
