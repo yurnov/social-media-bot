@@ -73,8 +73,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
     Handles incoming messages from the Telegram bot.
 
     This function processes text messages sent to the bot and determines the appropriate response
-    based on the message content. It supports specific keywords and URLs, such as Instagram Reels
-    , or other supported sites, and attempts to download and send the corresponding video.
+    based on the message content. It supports specific keywords and URLs, such as Instagram Reels,
+    Facebook Reels, YouTube Shorts, TikTok, Reddit, and X/Twitter, and attempts to download and send
+    the corresponding video to the user.
 
     Parameters:
         update (telegram.Update): Represents the incoming update from the Telegram bot.
@@ -82,14 +83,16 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
 
     Behavior:
         - If the message contains "ботяра" (case insensitive), responds with a random response
-          from a predefined list.
-        - If the message contains an Instagram Stories URL, informs the user that login is required.
-        - If the message contains a supported URL (Instagram Reels, Facebook Reels, Youtube Shorts, TikTok, Reddit, X/Twitter):
-            - Downloads and optionally compresses the video
-            - Sends the video back to the user via Telegram
-            - Preserves spoiler tags if present in original message
-            - Cleans up temporary files after sending
-        - Handles various error cases with appropriate user feedback
+          from a predefined list of bot responses.
+        - If the message contains an Instagram Stories URL, informs the user that downloading is not supported.
+        - If the message contains a supported URL 
+          (Instagram Reels, Facebook Reels, YouTube Shorts, 
+          TikTok, Reddit, X/Twitter):
+            - Downloads and optionally compresses the video.
+            - Sends the video back to the user via Telegram.
+            - Preserves any spoiler tags present in the original message.
+            - Cleans up temporary files after sending the video.
+        - Handles various error cases with appropriate user feedback, ensuring a smooth user experience.
 
     Returns:
         None
@@ -125,9 +128,11 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
     # Handle Instagram stories
     if "instagram.com/stories/" in message_text:
         if language == "ua":
-            await update.message.reply_text("Сторіз не можу скачати.")
+            response_message = "Сторіз не можу скачати."
         else:
-            await update.message.reply_text("Instagram stories not supported.")
+            response_message = "Instagram stories not supported."
+
+        await update.message.reply_text(response_message)
         return
 
     message_text = message_text.replace("** ", "**")
@@ -140,7 +145,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
             else:
 
                 await update.message.reply_text("This site is not supported. Try adding ** before the https://")
-            return
+            return # Stop further execution after sending the reply
         else:
             return
 
@@ -176,11 +181,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
             error("Telegram timeout while sending video. %s", e)
         except (NetworkError, TelegramError):
             await update.message.reply_text(
-                (
-                    f"О kurwa! Compressed file size: "
-                    f"{os.path.getsize(video_path) / (1024 * 1024):.2f}MB. "
-                    f"Telegram API Max is 50MB"
-                )
+                f"О kurwa! Compressed file size: "
+                f"{os.path.getsize(video_path) / (1024 * 1024):.2f}MB. "
+                f"Telegram API Max is 50MB"
             )
 
     finally:
