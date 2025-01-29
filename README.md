@@ -27,11 +27,11 @@ docker build . -t downloader-bot:latest
 ```
 docker run -d --name downloader-bot --restart always --env-file .env downloader-bot:latest
 ```
-or use builded image from Docker hub
+or use builded image from **Docker hub**
 ```
 docker run -d --name downloader-bot --restart always --env-file .env ovchynnikov/load-bot-linux:latest
 ```
-Alternatively, you can use docker-compose
+Alternatively, you can use **docker-compose**
 ```
 docker-compose build
 ```
