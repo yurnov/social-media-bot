@@ -41,6 +41,8 @@ docker-compose up
 ---
 
 ## Deploy with Linux Service (daemon)
+<details>
+  <summary>Click to expand</summary>
  1. Clone and Install
 Clone the repo
 ```sh
@@ -113,7 +115,7 @@ sudo systemctl status downloader-bot.service
   ```sh
   journalctl -u downloader-bot.service
   ```
-
+</details>
 ## How to use the bot
 
  1. Create Your Token for the Telegram Bot
