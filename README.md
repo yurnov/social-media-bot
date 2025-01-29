@@ -90,7 +90,7 @@ Environment="ALLOWED_CHAT_IDS="                        # <====== REPLACE THIS (v
 WantedBy=multi-user.target
 ```
 
-## 3. Start the Bot Service
+### 3. Start the Bot Service
 
 Reload the systemd daemon and start the bot service:
 
@@ -101,7 +101,7 @@ sudo systemctl start downloader-bot.service
 sudo systemctl status downloader-bot.service
 ```
 
-## Troubleshooting
+### 4. Troubleshooting
 
 - Check the status of the service:
   ```sh
