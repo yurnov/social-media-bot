@@ -129,13 +129,12 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
     message_text = message_text.replace("** ", "**")
 
     # Check if URL is from a supported site
-    if not any(site in message_text for site in supported_sites):
+    if not any(site in message_text for site in supported_sites) and update.effective_chat.type == "private" and "http" in message_text:
         if language == "ua":
             await update.message.reply_text("Цей сайт не підтримується. Спробуйте додати ** перед URL")
         else:
             await update.message.reply_text("This site is not supported. Try adding ** before the URL")
         return
-
     try:
         # Remove '**' prefix and any spaces if present
         url = message_text.replace("**", "") if message_text.startswith("**") else message_text
