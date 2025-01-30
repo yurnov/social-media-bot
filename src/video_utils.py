@@ -73,7 +73,7 @@ def is_video_too_long_to_download(url, max_duration_minutes=12):
     """
     metadata = get_video_metadata(url)
     if metadata and 'duration' in metadata:
-        debug("Video duration: %s seconds", metadata['duration'])
+        debug("Video duration: %s seconds. Max duration is %s seconds", metadata['duration'], max_duration_minutes * 60)
         return metadata['duration'] > (max_duration_minutes * 60)
     return False
 
@@ -85,16 +85,16 @@ def compress_video(input_path):
     Parameters:
         input_path (str): Path to original video.
     """
-
     temp_output = tempfile.mktemp(suffix=".mp4")
     # Caclulation of file size. 40 means MB
     target_size_bytes = 40 * 1024 * 1024
     duration = get_video_duration(input_path)
     if not duration:
-        raise ValueError("Get video duration failed")
+        raise ValueError("Get video duration failed.")
 
     # bitrate caclulation kb/s (bit/sec -> kb/sec)
     target_bitrate_kbps = (target_size_bytes * 8) / duration / 1000
+    debug("Starting compression for video: %s", input_path)
 
     command = [
         "nice",
@@ -123,9 +123,9 @@ def compress_video(input_path):
         subprocess.run(command, check=True)
         if os.path.exists(temp_output):
             os.replace(temp_output, input_path)
-            debug("Compressed done. File saved: %s", input_path)
     except subprocess.CalledProcessError as e:
         error("Error while compressing: %s", e)
+    debug("Compression completed for video: %s", input_path)
 
 
 def get_video_duration(video_path):
@@ -192,6 +192,12 @@ def download_video(url):
         return None
     except (OSError, IOError) as e:
         error("File system error occurred: %s", e)
+        return None
+    except yt_dlp.utils.DownloadError as e:
+        debug("Download error occurred: %s", e)
+        return None
+    except Exception as e:
+        debug("Unexpected error occurred: %s", e)
         return None
 
 
