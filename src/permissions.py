@@ -5,6 +5,7 @@ the bot based on their Telegram usernames and chat IDs configured in environment
 
 import os
 from typing import Optional
+from telegram import Update
 
 allowed_usernames = [x.strip() for x in os.getenv("ALLOWED_USERNAMES", "").split(",") if x]
 allowed_chat_ids = [int(x) for x in os.getenv("ALLOWED_CHAT_IDS", "").split(",") if x]
@@ -32,6 +33,28 @@ def is_user_or_chat_not_allowed(username: Optional[str], chat_id: int) -> bool:
 
     # Otherwise check if username is allowed
     return username not in allowed_usernames
+
+
+# Function to inform the user they are not allowed to use the bot
+async def inform_user_not_allowed(update: Update) -> None:
+    """
+    Informs the user that they are not allowed to use the bot.
+
+    This function sends a message to the user indicating that they do not have permission
+    to use the bot. It only responds if the chat type is private.
+
+    Args:
+        update (telegram.Update): Represents the incoming update from the Telegram bot.
+
+    Returns:
+        None
+    """
+    if update.effective_chat.type == "private":
+        await update.message.reply_text(
+            f"You are not allowed to use this bot.\n "
+            f"[Username]:  {update.effective_user.username}\n "
+            f"[Chat ID]: {update.effective_chat.id}"
+        )
 
 
 supported_sites = [

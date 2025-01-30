@@ -11,7 +11,7 @@ from telegram.ext import Application, MessageHandler, filters, ContextTypes
 from telegram.constants import MessageEntityType
 from logger import error, info
 from video_utils import compress_video, download_video, cleanup_file
-from permissions import is_user_or_chat_not_allowed, supported_sites
+from permissions import inform_user_not_allowed, is_user_or_chat_not_allowed, supported_sites
 
 load_dotenv()
 
@@ -30,10 +30,11 @@ def load_responses():
             return data["responses"]
     except FileNotFoundError:
         # Return a minimal set of responses if no response files found
-        return [
-            "Sorry, I'm having trouble loading my responses right now! 😅",
-            "Вибачте, у мене проблеми із завантаженням відповідей! 😅",
-        ]
+        not_found_responses = {
+            "en": "Sorry, I'm having trouble loading my responses right now! 😅",
+            "ua": "Вибачте, у мене проблеми із завантаженням відповідей! 😅",
+        }
+        return not_found_responses[language]
 
 
 responses = load_responses()
@@ -66,6 +67,47 @@ def spoiler_in_message(entities):
             if entity.type == MessageEntityType.SPOILER:
                 return True
     return False
+
+
+def is_bot_mentioned(message_text: str) -> bool:
+    """
+    Checks if the bot is mentioned in the message text.
+
+    Args:
+        message_text (str): The text of the message to check.
+
+    Returns:
+        bool: True if the bot is mentioned, False otherwise.
+    """
+    bot_trigger_words = ["ботяра", "bot_health"]
+    return any(word in message_text.lower().split() for word in bot_trigger_words)
+
+
+def clean_url(message_text: str) -> str:
+    """
+    Cleans the URL from the message text by removing unwanted characters.
+
+    Args:
+        message_text (str): The text of the message containing the URL.
+
+    Returns:
+        str: The cleaned URL.
+    """
+    return message_text.replace("**", "") if message_text.startswith("**") else message_text
+
+
+def is_large_file(file_path: str, max_size_mb: int = 50) -> bool:
+    """
+    Checks if the file size exceeds the specified maximum size.
+
+    Args:
+        file_path (str): The path to the file to check.
+        max_size_mb (int): The maximum file size in megabytes (default is 50MB).
+
+    Returns:
+        bool: True if the file size exceeds the maximum size, False otherwise.
+    """
+    return os.path.exists(file_path) and (os.path.getsize(file_path) / (1024 * 1024)) > max_size_mb
 
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  # pylint: disable=unused-argument
@@ -103,12 +145,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
     message_text = update.message.text.strip()
 
     # Handle bot mention response
-    if "ботяра" in message_text.lower() or "bot_health" in message_text.lower():
-        await update.message.reply_text(
-            f"{random.choice(responses)}\n"
-            f"[Chat ID]: {update.effective_chat.id}\n"
-            f"[Username]: {update.effective_user.username}"
-        )
+    if is_bot_mentioned(message_text):
+        await respond_with_bot_message(update)
         return
 
     # Ignore if message doesn't contain http
@@ -117,22 +155,16 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
 
     # Check if user is not allowed
     if is_user_or_chat_not_allowed(update.effective_user.username, update.effective_chat.id):
-        if update.effective_chat.type == "private":
-            await update.message.reply_text(
-                f"You are not allowed to use this bot.\n "
-                f"[Username]:  {update.effective_user.username}\n "
-                f"[Chat ID]: {update.effective_chat.id}"
-            )
+        await inform_user_not_allowed(update)
         return
 
     # Handle Instagram stories
     if "instagram.com/stories/" in message_text:
-        if language == "ua":
-            response_message = "Сторіз не можу скачати."
-        else:
-            response_message = "Instagram stories not supported."
-
-        await update.message.reply_text(response_message)
+        instagram_stories_responses = {
+            "ua": "Сторіз не можу скачати.",
+            "en": "Instagram stories not supported."
+        }
+        await update.message.reply_text(instagram_stories_responses[language])
         return
 
     message_text = message_text.replace("** ", "**")
@@ -140,55 +172,86 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
     # Check if URL is from a supported site. Ignore if it's from a group or channel
     if not any(site in message_text for site in supported_sites):
         if update.effective_chat.type == "private":
-            if language == "ua":
-                await update.message.reply_text("Цей сайт не підтримується. Спробуйте додати ** перед https://")
-            else:
-
-                await update.message.reply_text("This site is not supported. Try adding ** before the https://")
+            not_supported_responses = {
+                "ua": "Цей сайт не підтримується. Спробуйте додати ** перед https://",
+                "en": "This site is not supported. Try adding ** before the https://"
+            }
+            await update.message.reply_text(not_supported_responses[language])
             return  # Stop further execution after sending the reply
         return
 
     try:
         # Remove '**' prefix and any spaces if present
-        url = message_text.replace("**", "") if message_text.startswith("**") else message_text
+        url = clean_url(message_text)
 
         # Download the video
         video_path = download_video(url)
+
         # Check if video was downloaded
         if not video_path or not os.path.exists(video_path):
             return
 
         # Compress video if it's larger than 50MB
-        file_size_mb = os.path.getsize(video_path) / (1024 * 1024)
-        if file_size_mb > 50:
+        if is_large_file(video_path):
             compress_video(video_path)
 
         # Check for spoiler flag
         has_spoiler = spoiler_in_message(update.message.entities)
 
         # Send the video to the chat
-        try:
-            with open(video_path, 'rb') as video_file:
-                await update.message.chat.send_video(
-                    video=video_file,
-                    has_spoiler=has_spoiler,
-                    disable_notification=True,
-                    write_timeout=8000,
-                    read_timeout=8000,
-                )
-        except TimedOut as e:
-            error("Telegram timeout while sending video. %s", e)
-        except (NetworkError, TelegramError):
-            await update.message.reply_text(
-                f"О kurwa! Compressed file size: "
-                f"{os.path.getsize(video_path) / (1024 * 1024):.2f}MB. "
-                f"Telegram API Max is 50MB"
-            )
+        await send_video(update, video_path, has_spoiler)
 
     finally:
         # Clean up temporary files
         if video_path and os.path.exists(video_path):
             cleanup_file(video_path)
+
+
+async def respond_with_bot_message(update: Update) -> None:
+    """
+    Responds to the user with a random bot response when the bot is mentioned.
+
+    Args:
+        update (telegram.Update): Represents the incoming update from the Telegram bot.
+
+    Returns:
+        None
+    """
+    response_message = random.choice(responses)  # Select a random response from the predefined list
+    await update.message.reply_text(
+        f"{response_message}\n"
+        f"[Chat ID]: {update.effective_chat.id}\n"
+        f"[Username]: {update.effective_user.username}"
+    )
+
+
+async def send_video(update: Update, video_path: str, has_spoiler: bool) -> None:
+    """
+    Sends the video to the chat.
+
+    Args:
+        update (telegram.Update): Represents the incoming update from the Telegram bot.
+        video_path (str): The path to the video file to send.
+        has_spoiler (bool): Indicates if the message contains a spoiler.
+
+    Returns:
+        None
+    """
+    try:
+        with open(video_path, 'rb') as video_file:
+            await update.message.chat.send_video(
+                video=video_file,
+                has_spoiler=has_spoiler,
+                disable_notification=True,
+                write_timeout=8000,
+                read_timeout=8000,
+            )
+    except TimedOut as e:
+        error("Telegram timeout while sending video. %s", e)
+    except (NetworkError, TelegramError) as e:
+        await update.message.reply_text(
+            f"Error sending video: {str(e)}. Please try again later."
+        )
 
 
 def main():
