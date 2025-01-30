@@ -44,7 +44,7 @@ def is_video_duration_over_limits(video_path: str, max_duration: int = 720) -> b
     """
     duration = get_video_duration(video_path)
     if duration:
-        return duration < max_duration
+        return duration > max_duration
     return False
 
 
