@@ -8,7 +8,7 @@
 [![Push to Remote](https://github.com/ovchynnikov/load-bot-linux/actions/workflows/github-action-push-to-remote.yml/badge.svg)](https://github.com/ovchynnikov/load-bot-linux/actions/workflows/github-action-push-to-remote.yml)
 
 This guide provides step-by-step instructions on installation and running the Video Downloader bot on a Linux system.
-- Backend code uses [yt-dlp](https://github.com/yt-dlp/yt-dlp) which is released under [The Unlicense](https://unlicense.org/). All rights for yt-dlp belong to their respective authors.
+- Backend code uses [yt-dlp](https://github.com/yt-dlp/yt-dlp) which is released under The [Unlicense](https://unlicense.org/). All rights for yt-dlp belong to their respective authors.
 ---
 
 ## Deploy with Docker
