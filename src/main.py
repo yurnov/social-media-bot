@@ -226,7 +226,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
         # Send the video to the chat
         await send_video(update, video_path, has_spoiler)
 
-
     finally:
         # Clean up temporary files
         if video_path and os.path.exists(video_path):
