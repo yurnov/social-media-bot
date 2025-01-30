@@ -160,10 +160,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
 
     # Handle Instagram stories
     if "instagram.com/stories/" in message_text:
-        instagram_stories_responses = {
-            "ua": "Сторіз не можу скачати.",
-            "en": "Instagram stories not supported."
-        }
+        instagram_stories_responses = {"ua": "Сторіз не можу скачати.", "en": "Instagram stories not supported."}
         await update.message.reply_text(instagram_stories_responses[language])
         return
 
@@ -174,7 +171,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
         if update.effective_chat.type == "private":
             not_supported_responses = {
                 "ua": "Цей сайт не підтримується. Спробуйте додати ** перед https://",
-                "en": "This site is not supported. Try adding ** before the https://"
+                "en": "This site is not supported. Try adding ** before the https://",
             }
             await update.message.reply_text(not_supported_responses[language])
             return  # Stop further execution after sending the reply
@@ -249,9 +246,7 @@ async def send_video(update: Update, video_path: str, has_spoiler: bool) -> None
     except TimedOut as e:
         error("Telegram timeout while sending video. %s", e)
     except (NetworkError, TelegramError) as e:
-        await update.message.reply_text(
-            f"Error sending video: {str(e)}. Please try again later."
-        )
+        await update.message.reply_text(f"Error sending video: {str(e)}. Please try again later.")
 
 
 def main():
