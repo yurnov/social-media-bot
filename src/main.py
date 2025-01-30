@@ -10,12 +10,19 @@ from telegram.error import TimedOut, NetworkError, TelegramError
 from telegram.ext import Application, MessageHandler, filters, ContextTypes
 from telegram.constants import MessageEntityType
 from logger import error, info
-from video_utils import compress_video, download_video, cleanup_file
 from permissions import inform_user_not_allowed, is_user_or_chat_not_allowed, supported_sites
+from video_utils import (
+    compress_video,
+    download_video,
+    cleanup_file,
+    is_video_duration_over_limits,
+    is_video_too_long_to_download,
+)
 
 load_dotenv()
 
-language = os.getenv("LANGUAGE", "ua").lower()  # Default to Ukrainian if not set
+# Default to Ukrainian if not set
+language = os.getenv("LANGUAGE", "ua").lower()
 
 
 # Cache responses from JSON file
@@ -139,6 +146,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
     Returns:
         None
     """
+    # Initialize video_path to None
+    video_path = None
+
     if not update.message or not update.message.text:
         return
 
@@ -181,6 +191,11 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
         # Remove '**' prefix and any spaces if present
         url = clean_url(message_text)
 
+        # Check if video is too long
+        if is_video_too_long_to_download(url):
+            await update.message.reply_text("The video is too long to send (over 12 minutes).")
+            return
+
         # Download the video
         video_path = download_video(url)
 
@@ -189,11 +204,20 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
             return
 
         # Compress video if it's larger than 50MB
+        # do not process compression if video is too long
+        if is_video_duration_over_limits(video_path):
+            await update.message.reply_text("The video is too large to send (over 50MB).")
+            return
+
         if is_large_file(video_path):
             compress_video(video_path)
 
         # Check for spoiler flag
         has_spoiler = spoiler_in_message(update.message.entities)
+
+        if is_large_file(video_path):
+            await update.message.reply_text("The video is too large to send (over 50MB).")
+            return  # Stop further execution
 
         # Send the video to the chat
         await send_video(update, video_path, has_spoiler)

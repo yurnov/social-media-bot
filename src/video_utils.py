@@ -5,10 +5,77 @@ import os
 import shutil
 import subprocess
 import tempfile
+import yt_dlp  # Ensure yt_dlp is installed and available
 from dotenv import load_dotenv
 from logger import debug, error
 
-load_dotenv()
+load_dotenv()  # Load environment variables from .env file
+
+
+def get_video_metadata(url):
+    """
+    Extract metadata from a video URL without downloading the content.
+
+    Args:
+        url (str): The URL of the video to analyze
+
+    Returns:
+        dict: Video metadata including duration, format, etc., or None if extraction fails
+
+    Raises:
+        yt_dlp.utils.ExtractorError: When video information cannot be extracted
+    """
+    ydl_opts = {
+        'format': 'best',
+        'noplaylist': True,
+        'quiet': True,
+    }
+
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        try:
+            info_dict = ydl.extract_info(url, download=False)  # fetch metadata only
+            return info_dict
+        except yt_dlp.utils.ExtractorError as e:  # Catch specific extractor errors
+            debug("Failed to extract video metadata from %s: %s", url, e)
+            return None
+        except (ValueError, AttributeError) as e:  # Catch specific validation errors
+            debug("Invalid video URL or metadata format for %s: %s", url, e)
+            return None
+
+
+def is_video_duration_over_limits(video_path: str, max_duration: int = 720) -> bool:
+    """
+    Checks if the video file is of a suitable size for compression.
+
+    Args:
+        video_path (str): The path to the video file to check.
+        max_size_mb (int): The maximum file size in megabytes (default is 50MB).
+
+    Returns:
+        bool: True if the video file size is greater than the maximum size, False otherwise.
+    """
+    duration = get_video_duration(video_path)
+    if duration:
+        return duration > max_duration
+    return False
+
+
+def is_video_too_long_to_download(url, max_duration_minutes=12):
+    """
+    Checks if the video duration exceeds the specified maximum duration.
+
+    Args:
+        url (str): The URL of the video to check.
+        max_duration_minutes (int): The maximum video duration in minutes (default is 12 minutes).
+
+    Returns:
+        bool: True if the video duration exceeds the maximum duration, False otherwise.
+    """
+    metadata = get_video_metadata(url)
+    if metadata and 'duration' in metadata:
+        debug("Video duration: %s seconds", metadata['duration'])
+        return metadata['duration'] > (max_duration_minutes * 60)
+    return False
 
 
 def compress_video(input_path):
