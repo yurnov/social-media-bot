@@ -30,6 +30,9 @@ def compress_video(input_path):
     target_bitrate_kbps = (target_size_bytes * 8) / duration / 1000
 
     command = [
+        "nice",
+        "-n",
+        "-20",
         "ffmpeg",
         "-i",
         input_path,
