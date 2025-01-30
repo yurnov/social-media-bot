@@ -32,7 +32,7 @@ def compress_video(input_path):
     command = [
         "nice",
         "-n",
-        "-20",
+        "19",
         "ffmpeg",
         "-i",
         input_path,
