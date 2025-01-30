@@ -13,6 +13,18 @@ load_dotenv()  # Load environment variables from .env file
 
 
 def get_video_metadata(url):
+    """
+    Extract metadata from a video URL without downloading the content.
+
+    Args:
+        url (str): The URL of the video to analyze
+
+    Returns:
+        dict: Video metadata including duration, format, etc., or None if extraction fails
+
+    Raises:
+        yt_dlp.utils.ExtractorError: When video information cannot be extracted
+    """
     ydl_opts = {
         'format': 'best',
         'noplaylist': True,
@@ -24,10 +36,10 @@ def get_video_metadata(url):
             info_dict = ydl.extract_info(url, download=False)  # fetch metadata only
             return info_dict
         except yt_dlp.utils.ExtractorError as e:  # Catch specific extractor errors
-            debug("Extractor error: %s", e)
+            debug("Failed to extract video metadata from %s: %s", url, e)
             return None
-        except Exception as e:  # Optionally catch other unforeseen exceptions
-            debug("Unexpected error: %s", e)
+        except (ValueError, AttributeError) as e:  # Catch specific validation errors
+            debug("Invalid video URL or metadata format for %s: %s", url, e)
             return None
 
 
