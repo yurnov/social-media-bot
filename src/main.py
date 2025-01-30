@@ -9,7 +9,7 @@ from telegram import Update
 from telegram.error import TimedOut, NetworkError, TelegramError
 from telegram.ext import Application, MessageHandler, filters, ContextTypes
 from telegram.constants import MessageEntityType
-from logger import error, info
+from logger import error, info, debug
 from permissions import inform_user_not_allowed, is_user_or_chat_not_allowed, supported_sites
 from video_utils import (
     compress_video,
@@ -146,8 +146,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
     Returns:
         None
     """
-    # Initialize video_path to None
     video_path = None
+    debug("Received a new message: %s", update.message.text)
 
     if not update.message or not update.message.text:
         return
@@ -188,19 +188,23 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
         return
 
     try:
-        # Remove '**' prefix and any spaces if present
+        debug("Cleaning URL from message text.")
         url = clean_url(message_text)
+        debug("Cleaned URL: %s", url)
 
         # Check if video is too long
         if is_video_too_long_to_download(url):
+            debug("Video is too long to process.")
             await update.message.reply_text("The video is too long to send (over 12 minutes).")
             return
 
-        # Download the video
+        debug("Downloading video from URL: %s", url)
         video_path = download_video(url)
+        debug("Video downloaded to: %s", video_path)
 
         # Check if video was downloaded
         if not video_path or not os.path.exists(video_path):
+            debug("Video download failed or file does not exist.")
             return
 
         # Compress video if it's larger than 50MB
