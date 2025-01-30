@@ -226,8 +226,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
         # Send the video to the chat
         await send_video(update, video_path, has_spoiler)
 
-    except Exception as e:
-        error("An error occurred in handle_message: %s", e)
 
     finally:
         # Clean up temporary files

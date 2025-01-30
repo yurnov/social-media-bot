@@ -196,9 +196,6 @@ def download_video(url):
     except yt_dlp.utils.DownloadError as e:
         debug("Download error occurred: %s", e)
         return None
-    except Exception as e:
-        error("Unexpected error occurred: %s", e)
-        return None
 
 
 def cleanup_file(video_path):
