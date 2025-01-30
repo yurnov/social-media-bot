@@ -27,7 +27,7 @@ docker build . -t downloader-bot:latest
 ```
 docker run -d --name downloader-bot --restart always --env-file .env downloader-bot:latest
 ```
-or use builded image from **Docker hub**
+or use a built image from **Docker hub**
 ```
 docker run -d --name downloader-bot --restart always --env-file .env ovchynnikov/load-bot-linux:latest
 ```
@@ -168,12 +168,12 @@ The expected waiting time for videos up to 10 minutes is 3-10 minutes depending 
 The bot can use 'Safelist' to restrict access for users or groups.
 Ensure these variables are set in your `.env` file, without them or with the chat ID and username.
 You can get your `chat_id` and `username` by setting `LIMIT_BOT_ACCESS=True` first. Then, send the word `bot_health` or `ботяра`, and the bot will answer you with the chat ID and username.
-- Allowed Group Chat priority is highest. All users in the Group Chat can use the bot even if they have no access to the bot in private chat.
-- When `LIMIT_BOT_ACCESS=True` to use the bot in private messages add the username to the `ALLOWED_USERNAMES` variable.
+The priority for allowed Group Chat is highest. All users in the Group Chat can use the bot even if they do not have access to it in private chat.
+- When `LIMIT_BOT_ACCESS=True` to use the bot in private messages add the username to the `ALLOWED_USERNAMES` variable or chat ID to `ALLOWED_CHAT_IDS`.
 - If you want a bot in your Group Chat with restrictions, leave `ALLOWED_CHAT_IDS` empty and define the `ALLOWED_USERNAMES` variable list.
 ```ini
 LIMIT_BOT_ACCESS=False  # If True, the bot will only work for users in ALLOWED_USERNAMES or ALLOWED_CHAT_IDS
 ALLOWED_USERNAMES= # a list of allowed usernames as strings separated by commas. Example: ALLOWED_USERNAMES=username1,username2,username3
-ALLOWED_CHAT_IDS= # a list of allowed chat IDs as strings separated by commas. Example: ALLOWED_CHAT_IDS=12349,12345,123456
+ALLOWED_CHAT_IDS= # a list of allowed chat IDs as strings separated by commas. Example: ALLOWED_CHAT_IDS=-412349,12345,123456
 ```
 ---
