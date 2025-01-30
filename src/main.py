@@ -227,7 +227,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
         await send_video(update, video_path, has_spoiler)
 
     except Exception as e:
-        debug("An error occurred in handle_message: %s", e)
+        error("An error occurred in handle_message: %s", e)
 
     finally:
         # Clean up temporary files

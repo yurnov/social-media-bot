@@ -197,7 +197,7 @@ def download_video(url):
         debug("Download error occurred: %s", e)
         return None
     except Exception as e:
-        debug("Unexpected error occurred: %s", e)
+        error("Unexpected error occurred: %s", e)
         return None
 
 
