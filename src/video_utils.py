@@ -11,6 +11,7 @@ from logger import debug, error
 
 load_dotenv()  # Load environment variables from .env file
 
+
 def get_video_metadata(url):
     ydl_opts = {
         'format': 'best',
@@ -46,6 +47,7 @@ def is_video_duration_over_limits(video_path: str, max_duration: int = 720) -> b
         return duration < max_duration
     return False
 
+
 def is_video_too_long_to_download(url, max_duration_minutes=12):
     """
     Checks if the video duration exceeds the specified maximum duration.
@@ -62,6 +64,7 @@ def is_video_too_long_to_download(url, max_duration_minutes=12):
         debug("Video duration: %s seconds", metadata['duration'])
         return metadata['duration'] > (max_duration_minutes * 60)
     return False
+
 
 def compress_video(input_path):
     """
