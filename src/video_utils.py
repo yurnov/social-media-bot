@@ -11,16 +11,16 @@ from logger import debug, error
 
 load_dotenv()  # Load environment variables from .env file
 
-INSTACOOKIES = os.getenv("INSTACOOKIES", None)
+# Retrieve the INSTACOOKIES environment variable and set a default value
+INSTACOOKIES = os.getenv("INSTACOOKIES", "false").lower() == 'true'
 
-try:
-    INSTACOOKIES = INSTACOOKIES.lower() == 'true'
-    if INSTACOOKIES and not os.path.exists("instagram_cookies.txt"):
-        error("INSTACOOKIES is True but instagram_cookies.txt not found")
-        INSTACOOKIES = False
-except AttributeError:
-    debug("INSTACOOKIES not boolean, using default False")
-    INSTACOOKIES = False
+# Check if INSTACOOKIES is True and the required file exists
+if INSTACOOKIES:
+    if not os.path.exists("instagram_cookies.txt"):
+        error("INSTACOOKIES is True but 'instagram_cookies.txt' not found.")
+        INSTACOOKIES = False  # Set to False if the file is not found
+else:
+    debug("INSTACOOKIES is not set to True or cookies file not found")
 
 
 def get_video_metadata(url):
