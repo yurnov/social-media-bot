@@ -13,18 +13,14 @@ load_dotenv()  # Load environment variables from .env file
 
 INSTACOOKIES = os.getenv("INSTACOOKIES", None)
 
-if INSTACOOKIES.lower() not in ['true', 'false']:
-    debug("INSTACOOKIES not bolean, using default False")
-    INSTACOOKIES = False
-else:
-    if INSTACOOKIES.lower() == 'true':
-        INSTACOOKIES = True
-        if not os.path.exists("instagram_cookies.txt"):
-            error("INSTACOOKIES is True but instagram_cookies.txt not found")
-            INSTACOOKIES = False
-    else:
+try:
+    INSTACOOKIES = INSTACOOKIES.lower() == 'true'
+    if INSTACOOKIES and not os.path.exists("instagram_cookies.txt"):
+        error("INSTACOOKIES is True but instagram_cookies.txt not found")
         INSTACOOKIES = False
-
+except AttributeError:
+    debug("INSTACOOKIES not boolean, using default False")
+    INSTACOOKIES = False
 
 def get_video_metadata(url):
     """
