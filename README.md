@@ -14,7 +14,7 @@ This guide provides step-by-step instructions on installation and running the Vi
 ## Deploy with Docker
 
 
-Prerequisites: 
+Prerequisites:
   1. Create `.env` file in the project root folder with your token (mandatory) and access configuration (optional). Use `.env.example` as a reference.
   2. Clone the repo
   ```sh
@@ -86,7 +86,10 @@ Environment="BOT_TOKEN=your_bot_token"                 # <====== REPLACE THIS wi
 Environment="LOG_LEVEL=INFO"
 Environment="LIMIT_BOT_ACCESS=False"                   # <====== REPLACE THIS (value is optional. False by default) Type: Boolean
 Environment="ALLOWED_USERNAMES="                       # <====== REPLACE THIS (value is optional) Type: string separated by commas. Example: ALLOWED_USERNAMES=username1,username2,username3
-Environment="ALLOWED_CHAT_IDS="                        # <====== REPLACE THIS (value is optional) Type: string separated by commas  Example: ALLOWED_CHAT_IDS=12349,12345,123456
+Environment="ALLOWED_CHAT_IDS="                        # <====== REPLACE THIS (value is optional) Type: string separated by commas.  Example: ALLOWED_CHAT_IDS=12349,12345,123456
+Environment="INSTACOOKIES=False"                       # <====== REPLACE THIS (value is optional) Type: Boolean. False by default.
+Environment="ADMINS_CHAT_IDS="                         # <====== REPLACE THIS (value is optional) Type: string separated by commas. IDS to send Exceptions errors to private messages. Get this from bot health check
+Environment="SEND_ERROR_TO_ADMIN=True"                 # <====== REPLACE THIS (value is optional) Type: Boolean.  Send errors to admins in private messages
 
 [Install]
 WantedBy=multi-user.target
@@ -169,9 +172,10 @@ The expected waiting time for videos up to 10 minutes is 3-10 minutes depending 
 - Full list of supported sites here: [yt-dlp Supported Sites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)
 
 ### Instagram Stories and Reels credentials
-- To download Instagram stories and reels you need to create a cookies file `instagram_cookies.txt` in `bot` folder of your Docker image.
-- You can use the `instagram_cookies_example.txt` file as a reference from `src` folder of the repo.
-- Suggestion on how to get the file: easy export with [chrome extension](https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc) 
+- To download Instagram stories and reels you need to create a cookies file `instagram_cookies.txt` in the `bot` folder and set env var `INSTACOOKIES` to `True`.
+- You can use the `instagram_cookies_example.txt` file as a reference from the `src` folder of the repo.
+- Suggestion on how to get the file: easy export with [chrome extension](https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc)
+- When you run the bot with Docker, place `instagram_cookies.txt` to the folder with your `.env` file and add `-v instagram_cookies.txt:/bot/instagram_cookies.txt` to the start command
 
 ## Access Control with Safe List
 The bot can use 'Safelist' to restrict access for users or groups.
