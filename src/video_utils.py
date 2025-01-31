@@ -181,28 +181,27 @@ def download_video(url):
         os.path.join(temp_dir, "%(id)s.%(ext)s"),
     ]
 
+    debug("Downloading video from URL: %s", url)
+    result_path = None  # Initialize the result variable
+
     try:
-        debug("Downloading video from URL: %s", url)
         subprocess.run(command, check=True, timeout=120)
         for filename in os.listdir(temp_dir):
             if filename.endswith(".mp4"):
-                return os.path.join(temp_dir, filename)
-        return None
+                result_path = os.path.join(temp_dir, filename)
+                break  # Exit the loop once the file is found
     except subprocess.CalledProcessError as e:
         error("Error downloading video: %s", e)
-        return None
     except subprocess.TimeoutExpired as e:
         error("Download process timed out: %s", e)
-        return None
     except (OSError, IOError) as e:
         error("File system error occurred: %s", e)
-        return None
     except yt_dlp.utils.DownloadError as e:
         error("Download error occurred: %s", e)
-        return None
     except yt_dlp.utils.ExtractorError as e:
         error("Extractor error occurred: %s", e)
-        return None
+
+    return result_path  # Return the result variable at the end
 
 
 def cleanup_file(video_path):
