@@ -194,7 +194,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
         await inform_user_not_allowed(update)
         return
 
-
     message_text = message_text.replace("** ", "**")
 
     # Check if URL is from a supported site. Ignore if it's from a group or channel
