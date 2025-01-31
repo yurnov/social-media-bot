@@ -11,6 +11,20 @@ from logger import debug, error
 
 load_dotenv()  # Load environment variables from .env file
 
+INSTACOOKIES = os.getenv("INSTACOOKIES", False)
+
+if INSTACOOKIES.lower() not in ['true', 'false']:
+    debug("INSTACOOKIES not bolean, using default False")
+    INSTACOOKIES = False
+else:
+    if INSTACOOKIES.lower() == 'true':
+        INSTACOOKIES = True
+        if not os.path.exists("instagram_cookies.txt"):
+            error("INSTACOOKIES is True but instagram_cookies.txt not found")
+            INSTACOOKIES = False
+    else:
+        INSTACOOKIES = False
+
 
 def get_video_metadata(url):
     """
@@ -174,8 +188,7 @@ def download_video(url):
     temp_dir = tempfile.mkdtemp()
     command = [
         "yt-dlp",  # Assuming yt-dlp is installed and in the PATH
-        "--cookies",
-        "instagram_cookies.txt",  # Use the path to your cookies file
+        *(["--cookies", "instagram_cookies.txt"] if INSTACOOKIES else []),
         "-S",
         "vcodec:h264,fps,res,acodec:m4a",
         url,
