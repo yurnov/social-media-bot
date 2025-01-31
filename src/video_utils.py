@@ -204,6 +204,7 @@ def download_video(url):
         error("Extractor error occurred: %s", e)
         return None
 
+
 def cleanup_file(video_path):
     """
     Deletes a video file and its containing directory.
