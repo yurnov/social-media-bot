@@ -26,17 +26,17 @@ def get_video_metadata(url):
         yt_dlp.utils.ExtractorError: When video information cannot be extracted
     """
     ydl_opts = {
-        'format': 'best',
         'noplaylist': True,
         'quiet': True,
     }
-
+    debug("Getting video metadata for: %s", url)
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         try:
             info_dict = ydl.extract_info(url, download=False)  # fetch metadata only
+            debug("Video metadata extracted")
             return info_dict
-        except yt_dlp.utils.ExtractorError as e:  # Catch specific extractor errors
-            debug("Failed to extract video metadata from %s: %s", url, e)
+        except (yt_dlp.utils.ExtractorError, yt_dlp.utils.DownloadError) as e:
+            debug("Extracting metadata failed: %s", e)
             return None
         except (ValueError, AttributeError) as e:  # Catch specific validation errors
             debug("Invalid video URL or metadata format for %s: %s", url, e)
@@ -71,10 +71,13 @@ def is_video_too_long_to_download(url, max_duration_minutes=12):
     Returns:
         bool: True if the video duration exceeds the maximum duration, False otherwise.
     """
+    debug("Checking if video is too long to download: %s", url)
     metadata = get_video_metadata(url)
     if metadata and 'duration' in metadata:
         debug("Video duration: %s seconds. Max duration is %s seconds", metadata['duration'], max_duration_minutes * 60)
         return metadata['duration'] > (max_duration_minutes * 60)
+
+    debug("No video duration found in metadata for %s", url)
     return False
 
 
@@ -179,6 +182,7 @@ def download_video(url):
     ]
 
     try:
+        debug("Downloading video from URL: %s", url)
         subprocess.run(command, check=True, timeout=120)
         for filename in os.listdir(temp_dir):
             if filename.endswith(".mp4"):
@@ -194,7 +198,10 @@ def download_video(url):
         error("File system error occurred: %s", e)
         return None
     except yt_dlp.utils.DownloadError as e:
-        debug("Download error occurred: %s", e)
+        error("Download error occurred: %s", e)
+        return None
+    except yt_dlp.utils.ExtractorError as e:
+        error("Extractor error occurred: %s", e)
         return None
 
 
