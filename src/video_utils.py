@@ -20,7 +20,7 @@ if INSTACOOKIES:
         error("INSTACOOKIES is True but 'instagram_cookies.txt' not found.")
         INSTACOOKIES = False  # Set to False if the file is not found
 else:
-    debug("INSTACOOKIES is not set to True or cookies file not found")
+    debug("INSTACOOKIES is False or cookies file not found")
 
 
 def get_video_metadata(url):
