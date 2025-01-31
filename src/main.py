@@ -191,7 +191,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
     debug("Cleaning URL from message text.")
     url = clean_url(message_text)
     debug("Cleaned URL: %s", url)
- 
+
     if is_video_too_long_to_download(url):
         debug("Video is too long to process.")
         await update.message.reply_text("The video is too long to send (over 12 minutes).")
