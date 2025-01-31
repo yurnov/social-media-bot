@@ -82,8 +82,11 @@ Environment="BOT_TOKEN=your_bot_token"                 # <====== REPLACE THIS wi
 Environment="LOG_LEVEL=INFO"
 Environment="LIMIT_BOT_ACCESS=False"                   # <====== REPLACE THIS (value is optional. False by default) Type: Boolean
 Environment="ALLOWED_USERNAMES="                       # <====== REPLACE THIS (value is optional) Type: string separated by commas. Example: ALLOWED_USERNAMES=username1,username2,username3
-Environment="ALLOWED_CHAT_IDS="                        # <====== REPLACE THIS (value is optional) Type: string separated by commas  Example: ALLOWED_CHAT_IDS=12349,12345,123456
-Environment="INSTACOOKIES=False"                       # <====== REPLACE THIS (value is optional) Type: bool
+Environment="ALLOWED_CHAT_IDS="                        # <====== REPLACE THIS (value is optional) Type: string separated by commas.  Example: ALLOWED_CHAT_IDS=12349,12345,123456
+Environment="INSTACOOKIES=False"                       # <====== REPLACE THIS (value is optional) Type: Boolean. False by default.
+Environment="ADMINS_CHAT_IDS="                         # <====== REPLACE THIS (value is optional) Type: string separated by commas. IDS to send Exceptions errors to private messages. Get this from bot health check
+Environment="ADMINS_CHAT_IDS="                         # <====== REPLACE THIS (value is optional) Type: string separated by commas. Example: ADMINS_CHAT_IDS=12349,12345,123456
+Environment="SEND_ERROR_TO_ADMIN=True"                 # <====== REPLACE THIS (value is optional) Type: Boolean.  Send errors to admins in private messages
 
 [Install]
 WantedBy=multi-user.target
