@@ -2,7 +2,7 @@
 .env
 .env.*
 !.env.example
-# instagram_cookies.txt should be tracked by git
+# instagram_cookies.txt should not be tracked by git because it has cookies
 instagram_cookies.txt
 
 # Byte-compiled / optimized / compiled Python files
