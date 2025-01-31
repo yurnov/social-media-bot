@@ -26,6 +26,7 @@ language = os.getenv("LANGUAGE", "ua").lower()
 admins_chat_ids = os.getenv("ADMINS_CHAT_IDS")
 send_error_to_admin = os.getenv("SEND_ERROR_TO_ADMIN", "False").lower() == "true"
 
+
 # Cache responses from JSON file
 @lru_cache(maxsize=1)
 def load_responses():
@@ -120,9 +121,9 @@ def is_large_file(file_path: str, max_size_mb: int = 50) -> bool:
 
 async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Log the error and send a message to the admins.
-        Works only if SEND_ERROR_TO_ADMIN=True in .env file. and ADMINS_CHAT_IDS is set.
-        If SEND_ERROR_TO_ADMIN=False, the error will be logged but not sent to admins.
-        Works only for Exceptions errors that are not handled by the bot code.
+    Works only if SEND_ERROR_TO_ADMIN=True in .env file. and ADMINS_CHAT_IDS is set.
+    If SEND_ERROR_TO_ADMIN=False, the error will be logged but not sent to admins.
+    Works only for Exceptions errors that are not handled by the bot code.
     """
     username = update.effective_sender.username
     debug("User username: %s", username)
