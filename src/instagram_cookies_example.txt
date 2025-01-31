@@ -1,0 +1,12 @@
+# Netscape HTTP Cookie File
+# http://curl.haxx.se/rfc/cookie_spec.html
+# This is a generated file!  Do not edit.
+
+.instagram.com	TRUE	/	TRUE	1745166619	ig_did	FakeID-1234-5678-9101-FakeToken
+.instagram.com	TRUE	/	TRUE	1748190619	mid	FakeMID-9876-5432-1098-FakeSession
+.instagram.com	TRUE	/	TRUE	1748190623	datr	FakeDATR-1111-2222-3333-4444
+.instagram.com	TRUE	/	TRUE	1769785670	csrftoken	FakeCSRFToken-5555-6666-7777-8888
+.instagram.com	TRUE	/	TRUE	1746112070	ds_user_id	FakeUserID-9999-0000-1111-2222
+.instagram.com	TRUE	/	TRUE	1769869966	sessionid	FakeSessionID-3333-4444-5555-6666
+.instagram.com	TRUE	/	TRUE	1738940866	wd	FakeWD-7777-8888-9999-0000
+.instagram.com	TRUE	/	TRUE	0	rur	"FakeRUR-AAAA-BBBB-CCCC-DDDD"
