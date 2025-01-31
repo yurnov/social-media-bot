@@ -22,6 +22,7 @@ except AttributeError:
     debug("INSTACOOKIES not boolean, using default False")
     INSTACOOKIES = False
 
+
 def get_video_metadata(url):
     """
     Extract metadata from a video URL without downloading the content.
