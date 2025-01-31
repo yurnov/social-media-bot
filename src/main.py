@@ -125,6 +125,10 @@ async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     If SEND_ERROR_TO_ADMIN=False, the error will be logged but not sent to admins.
     Works only for Exceptions errors that are not handled by the bot code.
     """
+    if update is None or update.effective_sender is None:
+        error("Update or effective_sender is None. Cannot log error.")
+        return  # Exit the function if update is not valid
+
     username = update.effective_sender.username
     debug("User username: %s", username)
     # Log the error
