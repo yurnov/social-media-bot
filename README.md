@@ -176,4 +176,20 @@ LIMIT_BOT_ACCESS=False  # If True, the bot will only work for users in ALLOWED_U
 ALLOWED_USERNAMES= # a list of allowed usernames as strings separated by commas. Example: ALLOWED_USERNAMES=username1,username2,username3
 ALLOWED_CHAT_IDS= # a list of allowed chat IDs as strings separated by commas. Example: ALLOWED_CHAT_IDS=-412349,12345,123456
 ```
+
+## Troubleshooting
+If you sent a link to the bot and got no response, send the word `bot_health` or `ботяра` to the bot to check if it's working.
+
+- in .env file set IDS to send Exceptions errors to in private messages to Admins. Get these ids from bot healthcheck.
+Works only for Exceptions errors that are not handled by the bot code.
+
+```ini
+ADMINS_CHAT_IDS="your_admins_chat_id_here"  # ADMINS_CHAT_IDS=chatid_1,chatid_2,chatid_3
+```
+
+- in .env file set SEND_ERROR_TO_ADMIN=True to send errors to admins in private messages
+
+```ini
+SEND_ERROR_TO_ADMIN=True
+```
 ---

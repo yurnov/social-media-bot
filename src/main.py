@@ -23,7 +23,8 @@ load_dotenv()
 
 # Default to Ukrainian if not set
 language = os.getenv("LANGUAGE", "ua").lower()
-
+admins_chat_ids = os.getenv("ADMINS_CHAT_IDS")
+send_error_to_admin = os.getenv("SEND_ERROR_TO_ADMIN", "False").lower() == "true"
 
 # Cache responses from JSON file
 @lru_cache(maxsize=1)
@@ -117,6 +118,30 @@ def is_large_file(file_path: str, max_size_mb: int = 50) -> bool:
     return os.path.exists(file_path) and (os.path.getsize(file_path) / (1024 * 1024)) > max_size_mb
 
 
+async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Log the error and send a message to the admins.
+        Works only if SEND_ERROR_TO_ADMIN=True in .env file. and ADMINS_CHAT_IDS is set.
+        If SEND_ERROR_TO_ADMIN=False, the error will be logged but not sent to admins.
+        Works only for Exceptions errors that are not handled by the bot code.
+    """
+    username = update.effective_sender.username
+    debug("User username: %s", username)
+    # Log the error
+    debug("Update %s caused error %s", update, context.error)
+    debug("send_error_to_admin: %s, admin_chat_id: %s", send_error_to_admin, admins_chat_ids)
+    if send_error_to_admin and admins_chat_ids:
+        admin_ids = admins_chat_ids.split(",")  # Split the string into a list of IDs
+        for admin_chat_id in admin_ids:
+            await context.bot.send_message(
+                chat_id=admin_chat_id.strip(),  # Strip any whitespace
+                text=f"`{context.error}` \n\nWho triggered the error: `@{username}`.\nUrl was {update.message.text}",
+                disable_web_page_preview=True,
+                parse_mode='Markdown',
+            )
+    else:
+        debug("Admin chat IDs are not set; error message not sent to admins.")
+
+
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  # pylint: disable=unused-argument
     """
     Handles incoming messages from the Telegram bot.
@@ -147,7 +172,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
         None
     """
     video_path = None
-
     if not update.message or not update.message.text:
         return
 
@@ -306,6 +330,8 @@ def main():
     bot_token = os.getenv("BOT_TOKEN")
     application = Application.builder().token(bot_token).build()
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+    # This handler will receive every error which happens in your bot
+    application.add_error_handler(error_handler)
     info("Bot started. Ctrl+C to stop")
     application.run_polling()
 
