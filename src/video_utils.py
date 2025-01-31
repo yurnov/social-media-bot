@@ -11,7 +11,7 @@ from logger import debug, error
 
 load_dotenv()  # Load environment variables from .env file
 
-INSTACOOKIES = os.getenv("INSTACOOKIES", False)
+INSTACOOKIES = os.getenv("INSTACOOKIES", None)
 
 if INSTACOOKIES.lower() not in ['true', 'false']:
     debug("INSTACOOKIES not bolean, using default False")
