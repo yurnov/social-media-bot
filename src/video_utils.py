@@ -174,6 +174,8 @@ def download_video(url):
     temp_dir = tempfile.mkdtemp()
     command = [
         "yt-dlp",  # Assuming yt-dlp is installed and in the PATH
+        "--cookies",
+        "instagram_cookies.txt",  # Use the path to your cookies file
         "-S",
         "vcodec:h264,fps,res,acodec:m4a",
         url,

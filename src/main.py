@@ -194,12 +194,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
         await inform_user_not_allowed(update)
         return
 
-    # Handle Instagram stories
-    if "instagram.com/stories/" in message_text:
-        instagram_stories_responses = {"ua": "Сторіз не можу скачати.", "en": "Instagram stories not supported."}
-        await update.message.reply_text(instagram_stories_responses[language])
-        return
-
     message_text = message_text.replace("** ", "**")
 
     # Check if URL is from a supported site. Ignore if it's from a group or channel
