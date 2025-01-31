@@ -31,6 +31,10 @@ or use a built image from **Docker hub**
 ```
 docker run -d --name downloader-bot --restart always --env-file .env ovchynnikov/load-bot-linux:latest
 ```
+or if you use instagram cookies
+```
+docker run -d --name downloader-bot --restart always --env-file .env -v /absolute/path/to/instagram_cookies.txt:/bot/instagram_cookies.txt ovchynnikov/load-bot-linux:latest
+```
 Alternatively, you can use **docker-compose**
 ```
 docker-compose build
