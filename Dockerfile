@@ -12,6 +12,8 @@ RUN --mount=type=bind,target=/tmp/requirements.txt,source=src/requirements.txt \
 
 COPY src /bot
 
+COPY src/instagram_cookies.txt /bot/cookies/instagram_cookies.txt
+
 WORKDIR /bot
 
 # https://stackoverflow.com/questions/58701233/docker-logs-erroneously-appears-empty-until-container-stops

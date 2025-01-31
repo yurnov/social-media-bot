@@ -166,7 +166,7 @@ The expected waiting time for videos up to 10 minutes is 3-10 minutes depending 
 
 ### Instagram Stories and Reels credentials
 - To download Instagram stories and reels you need to create a cookies file `instagram_cookies.txt`.
-- You can use the `instagram_cookies_example.txt` file as a reference in src folder of the repo.
+- You can use the `instagram_cookies_example.txt` file as a reference in `src` folder of the repo.
 
 ## Access Control with Safe List
 The bot can use 'Safelist' to restrict access for users or groups.
