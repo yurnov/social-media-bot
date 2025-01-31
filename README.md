@@ -168,10 +168,10 @@ The expected waiting time for videos up to 10 minutes is 3-10 minutes depending 
 - Full list of supported sites here: [yt-dlp Supported Sites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)
 
 ### Instagram Stories and Reels credentials
-- To download Instagram stories and reels you need to create a cookies file `instagram_cookies.txt` in `bot` folder and set environ `INSTACOOKIES` to `True`.
-- You can use the `instagram_cookies_example.txt` file as a reference from `src` folder of the repo.
+- To download Instagram stories and reels you need to create a cookies file `instagram_cookies.txt` in the `bot` folder and set env var `INSTACOOKIES` to `True`.
+- You can use the `instagram_cookies_example.txt` file as a reference from the `src` folder of the repo.
 - Suggestion on how to get the file: easy export with [chrome extension](https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc)
-- When you run bot with Docker, place `instagram_cookies.txt` to the folder with your `.env` file and add `-v instagram_cookies.txt:/bot/instagram_cookies.txt` to the start command
+- When you run the bot with Docker, place `instagram_cookies.txt` to the folder with your `.env` file and add `-v instagram_cookies.txt:/bot/instagram_cookies.txt` to the start command
 
 ## Access Control with Safe List
 The bot can use 'Safelist' to restrict access for users or groups.
