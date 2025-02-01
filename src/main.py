@@ -26,7 +26,6 @@ load_dotenv()
 language = os.getenv("LANGUAGE", "ua").lower()
 
 
-
 # Cache responses from JSON file
 @lru_cache(maxsize=1)
 def load_responses():
