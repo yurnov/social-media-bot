@@ -234,7 +234,7 @@ def download_video(url):
     in a temporary directory with a filename based on the video's title. The function
     returns the path to the downloaded video file if successful. If the download fails, "[Instagram]"
     and "No video formats found!" present in the error message, the function will invoke
-    download_instagram_media based on `gallery-dl`.
+    download_instagram_images based on `gallery-dl`.
 
     Parameters:
         url (str): The URL of the video to download.

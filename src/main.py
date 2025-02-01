@@ -26,6 +26,9 @@ language = os.getenv("LANGUAGE", "ua").lower()
 admins_chat_ids = os.getenv("ADMINS_CHAT_IDS")
 send_error_to_admin = os.getenv("SEND_ERROR_TO_ADMIN", "False").lower() == "true"
 
+TELEGRAM_WRITE_TIMEOUT = 8000
+TELEGRAM_READ_TIMEOUT = 8000
+
 
 # Cache responses from JSON file
 @lru_cache(maxsize=1)
@@ -245,7 +248,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
             # Compress video if it's larger than 50MB
             # do not process compression if video is too long
             if is_video_duration_over_limits(video):
-                await update.message.reply_text("The video is too large to send (over 50MB).")
+                await update.message.reply_text("The video is too long to send (over 12min).")
                 continue  # Drop the video and continue to the next one
 
             if is_large_file(video):
@@ -306,8 +309,8 @@ async def send_video(update: Update, video: str, has_spoiler: bool) -> None:
                 video=video_file,
                 has_spoiler=has_spoiler,
                 disable_notification=True,
-                write_timeout=8000,
-                read_timeout=8000,
+                write_timeout=TELEGRAM_WRITE_TIMEOUT,
+                read_timeout=TELEGRAM_READ_TIMEOUT,
             )
     except TimedOut as e:
         error("Telegram timeout while sending video. %s", e)
@@ -318,12 +321,10 @@ async def send_video(update: Update, video: str, has_spoiler: bool) -> None:
 async def send_pic(update: Update, pic: str) -> None:
     """
     Sends the picture to the chat.
-
     Args:
         update (telegram.Update): Represents the incoming update from the Telegram bot.
         video_path (str): The path to the video file to send.
         has_spoiler (bool): Indicates if the message contains a spoiler.
-
     Returns:
         None
     """
@@ -332,8 +333,8 @@ async def send_pic(update: Update, pic: str) -> None:
             await update.message.chat.send_photo(
                 photo=pic_file,
                 disable_notification=True,
-                write_timeout=8000,
-                read_timeout=8000,
+                write_timeout=TELEGRAM_WRITE_TIMEOUT,
+                read_timeout=TELEGRAM_READ_TIMEOUT,
             )
     except TimedOut as e:
         error("Telegram timeout while sending picture. %s", e)
