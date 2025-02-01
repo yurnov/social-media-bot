@@ -201,7 +201,6 @@ def download_instagram_media(url, temp_dir):
     ]
 
     debug("Downloading Instagram media from URL: %s", url)
-    result_path = None  # Initialize the result variable
 
     try:
         subprocess.run(command, check=True, timeout=120)
