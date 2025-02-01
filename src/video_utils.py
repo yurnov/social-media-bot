@@ -6,6 +6,7 @@ import re
 import shutil
 import subprocess
 import tempfile
+import yt_dlp
 from dotenv import load_dotenv
 from logger import debug, error
 from pathlib import Path
@@ -263,7 +264,9 @@ def download_video(url):
         for filename in os.listdir(temp_dir):
             if filename.endswith(".mp4"):
                 result_path = os.path.join(temp_dir, filename)
-                break  # Exit the loop once the file is found
+                debug("Video file found: %s", result_path)
+                return result_path  # Exit the loop once the file is found
+
     except subprocess.CalledProcessError as e:
         error("Error downloading video: %s", e)
         if "[Instagram]" in str(e) and "No video formats found!" in str(e):
@@ -272,6 +275,7 @@ def download_video(url):
             result_path = download_instagram_images(url, temp_dir)
             if result_path:
                 debug("Successfully downloaded Instagram media using gallery-dl")
+                return result_path
             else:
                 error("Failed to download Instagram media using gallery-dl")
         except Exception as ed:  # pylint: disable=broad-except
@@ -299,22 +303,17 @@ def cleanup_file(media_path):
     its parent directory. Logs are printed if debugging is enabled.
 
     Parameters:
-        video_path (str): The path to the video file to delete.
+        video_path (list): The path to the video file to delete.
 
     Logs:
         Logs messages about the deletion process or any errors encountered.
     """
 
     folder_to_delete = None
-    if isinstance(media_path, str):
-        try:
-            folder_to_delete = Path(media_path).parts[1]
-        except (OSError, IOError):
-            debug("Unable to find temp folder for %s", media_path)
-            return
     if isinstance(media_path, list):
         try:
-            folder_to_delete = Path(media_path[0]).parts[1]
+            folder_to_delete = "/" + str(Path(media_path[0].parts[1])) + str(Path(media_path[0].parts[1]))
+            debug("Temp folder to delete: %s", folder_to_delete)
         except (OSError, IOError):
             debug("Unable to find temp folder for %s", media_path[0])
             return

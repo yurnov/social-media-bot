@@ -223,20 +223,27 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
 
     try:
         # media_path can be string or list of strings
-        media_path = download_video(url)
+        media_path = [] # Initilize empty list of media paths
         video_path = []  # Initilize empty list of video paths
         pic_path = []  # Initilize empty list of picture paths
+        return_path = download_video(url)
+        # Addpend the return_path to media_path
+        media_path.append(return_path)
 
         for path in media_path:
-            debug("Media downloaded to: %s", video_path)
+            debug("Media downloaded to: %s", path)
 
             # Create a lists of video and picture paths
             if path.endswith(".mp4"):
                 video_path.append(path)
+                debug("Media detected as video: %s", path)
             elif path.endswith(".jpg", ".jpeg", ".png"):
                 pic_path.append(path)
+                debug("Media detected as picture: %s", path)
 
         for video in video_path:
+
+            debug("Processing video: %s", video)
             # Compress video if it's larger than 50MB
             # do not process compression if video is too long
             if is_video_duration_over_limits(video):
@@ -254,6 +261,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
                 continue  # Stop further execution for this video
 
             # Send the video to the chat
+            debug("Sending video to chat.")
             await send_video(update, video, has_spoiler)
 
         for pic in pic_path:
