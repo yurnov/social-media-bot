@@ -177,6 +177,12 @@ The expected waiting time for videos up to 10 minutes is 3-10 minutes depending 
 - Suggestion on how to get the file: easy export with [chrome extension](https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc)
 - When you run the bot with Docker, place `instagram_cookies.txt` to the folder with your `.env` file and add `-v instagram_cookies.txt:/bot/instagram_cookies.txt` to the start command
 
+### Instagram Stories and Carousels with Pictures
+- The bot now supports downloading Instagram stories and carousels with pictures using `gallery-dl` when `yt-dlp` fails.
+- To enable this feature, ensure you have `gallery-dl` installed and configured.
+- The bot will automatically fallback to `gallery-dl` for Instagram URLs without "reels" when `yt-dlp` fails.
+- The same cookies file used for `yt-dlp` can be used for `gallery-dl`
+
 ## Access Control with Safe List
 The bot can use 'Safelist' to restrict access for users or groups.
 Ensure these variables are set in your `.env` file, without them or with the chat ID and username.

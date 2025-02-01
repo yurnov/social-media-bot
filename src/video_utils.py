@@ -163,6 +163,46 @@ def get_video_duration(video_path):
         error("Error getting video duration: %s", e)
         return None
 
+def download_instagram_media(url):
+    """
+    Downloads Instagram media using gallery-dl.
+
+    This function uses the `gallery-dl` command-line tool to download media from Instagram.
+    The media is stored in a temporary directory. The function returns the path to the downloaded
+    media file if successful.
+
+    Parameters:
+        url (str): The URL of the Instagram media to download.
+
+    Returns:
+        str: The path to the downloaded media file if successful, or None if the download fails.
+    """
+    temp_dir = tempfile.mkdtemp()
+    command = [
+        "gallery-dl",  # Assuming gallery-dl is installed and in the PATH
+        *(["--cookies", "instagram_cookies.txt"] if INSTACOOKIES else []),
+        url,
+        "-d",
+        temp_dir,
+    ]
+
+    debug("Downloading Instagram media from URL: %s", url)
+    result_path = None  # Initialize the result variable
+
+    try:
+        subprocess.run(command, check=True, timeout=120)
+        for filename in os.listdir(temp_dir):
+            if filename.endswith((".mp4", ".jpg", ".jpeg", ".png")):
+                result_path = os.path.join(temp_dir, filename)
+                break  # Exit the loop once the file is found
+    except subprocess.CalledProcessError as e:
+        error("Error downloading Instagram media: %s", e)
+    except subprocess.TimeoutExpired as e:
+        error("Download process timed out: %s", e)
+    except (OSError, IOError) as e:
+        error("File system error occurred: %s", e)
+
+    return result_path  # Return the result variable at the end
 
 def download_video(url):
     """
@@ -170,7 +210,9 @@ def download_video(url):
 
     This function uses the `yt-dlp` command-line tool to download a video. The video is stored
     in a temporary directory with a filename based on the video's title. The function
-    returns the path to the downloaded video file if successful.
+    returns the path to the downloaded video file if successful. If the download fails, "[Instagram]"
+    and "No video formats found!" present in the error message, the function will inwoke
+    download_instagram_media based on `gallery-dl`.
 
     Parameters:
         url (str): The URL of the video to download.
@@ -204,6 +246,9 @@ def download_video(url):
                 break  # Exit the loop once the file is found
     except subprocess.CalledProcessError as e:
         error("Error downloading video: %s", e)
+        if "[Instagram]" in str(e) and "No video formats found!" in str(e):
+            debug("yt-dlp failed for Instagram URL, trying gallery-dl")
+            result_path = download_instagram_media(url)
     except subprocess.TimeoutExpired as e:
         error("Download process timed out: %s", e)
     except (OSError, IOError) as e:
