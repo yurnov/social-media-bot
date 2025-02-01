@@ -2,13 +2,13 @@
 # pylint: disable=missing-function-docstring
 
 import os
+import re
 import shutil
 import subprocess
 import tempfile
-import re
-import yt_dlp  # Ensure yt_dlp is installed and available
 from dotenv import load_dotenv
 from logger import debug, error
+from pathlib import Path
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -200,14 +200,20 @@ def download_instagram_images(url, temp_dir):
         temp_dir,
     ]
 
-    debug("Downloading Instagram media from URL: %s", url)
-
     try:
+        debug("Running gallery-dl command: %s", command)
         subprocess.run(command, check=True, timeout=120)
-        for filename in os.listdir(temp_dir):
+        result_path = []  # Initialize the result variable as a empty list
+        # Use Path.rglob to recursively search for files in the temp directory
+        # as the output contains subdirectories and may contain multiple files
+        for file in [str(file) for file in Path(temp_output).rglob("*")]:
             if filename.endswith((".mp4", ".jpg", ".jpeg", ".png")):
-                result_path = os.path.join(temp_dir, filename)
-                break  # Exit the loop once the file is found
+                # Append the file path to the result list
+                result_path.append(file)
+                debug("Instagram media file found: %s", file)
+        if not result_path:
+            error("No media files found in the gallery-dl output")
+            return None
     except subprocess.CalledProcessError as e:
         error("Error downloading Instagram media: %s", e)
     except subprocess.TimeoutExpired as e:
