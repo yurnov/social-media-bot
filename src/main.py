@@ -261,18 +261,12 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
                 continue  # Stop further execution for this video
 
             # Send the video to the chat
-            debug("Sending video to chat.")
+            debug("Sending video to chat: %s", video)
             await send_video(update, video, has_spoiler)
 
         for pic in pic_path:
             # Send the picture to the chat
-            with open(pic, 'rb') as pic_file:
-                await update.message.chat.send_photo(
-                    photo=pic_file,
-                    disable_notification=True,
-                    write_timeout=8000,
-                    read_timeout=8000,
-                )
+            send_pic(update, pic)
 
     finally:
         if media_path:
@@ -297,20 +291,20 @@ async def respond_with_bot_message(update: Update) -> None:
     )
 
 
-async def send_video(update: Update, video_path: str, has_spoiler: bool) -> None:
+async def send_video(update: Update, video: str, has_spoiler: bool) -> None:
     """
     Sends the video to the chat.
 
     Args:
         update (telegram.Update): Represents the incoming update from the Telegram bot.
-        video_path (str): The path to the video file to send.
+        video (str): The path to the video file to send.
         has_spoiler (bool): Indicates if the message contains a spoiler.
 
     Returns:
         None
     """
     try:
-        with open(video_path, 'rb') as video_file:
+        with open(video, 'rb') as video_file:
             await update.message.chat.send_video(
                 video=video_file,
                 has_spoiler=has_spoiler,
@@ -322,6 +316,32 @@ async def send_video(update: Update, video_path: str, has_spoiler: bool) -> None
         error("Telegram timeout while sending video. %s", e)
     except (NetworkError, TelegramError) as e:
         await update.message.reply_text(f"Error sending video: {str(e)}. Please try again later.")
+
+
+async def send_pic(update: Update, picture: str) -> None:
+    """
+    Sends the picture to the chat.
+
+    Args:
+        update (telegram.Update): Represents the incoming update from the Telegram bot.
+        video_path (str): The path to the video file to send.
+        has_spoiler (bool): Indicates if the message contains a spoiler.
+
+    Returns:
+        None
+    """
+    try:
+        with open(picture, 'rb') as pic_file:
+            await update.message.chat.send_photo(
+                photo=pic_file,
+                disable_notification=True,
+                write_timeout=8000,
+                read_timeout=8000,
+            )
+    except TimedOut as e:
+        error("Telegram timeout while sending picture. %s", e)
+    except (NetworkError, TelegramError) as e:
+        await update.message.reply_text(f"Error sending picture: {str(e)}. Please try again later.")
 
 
 def main():
