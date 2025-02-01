@@ -189,7 +189,7 @@ def download_instagram_media(url, temp_dir):
 
     # Ensure that reels not in the URL
     if "reel" in url:
-        error("Reels shoud be handled by the yt-dlp")
+        error("Reels should be handled by the yt-dlp")
         return None
 
     command = [
@@ -226,7 +226,7 @@ def download_video(url):
     This function uses the `yt-dlp` command-line tool to download a video. The video is stored
     in a temporary directory with a filename based on the video's title. The function
     returns the path to the downloaded video file if successful. If the download fails, "[Instagram]"
-    and "No video formats found!" present in the error message, the function will inwoke
+    and "No video formats found!" present in the error message, the function will invoke
     download_instagram_media based on `gallery-dl`.
 
     Parameters:

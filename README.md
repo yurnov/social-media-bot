@@ -180,7 +180,7 @@ The expected waiting time for videos up to 10 minutes is 3-10 minutes depending 
 ### Instagram Stories and Carousels with Pictures
 - The bot now supports downloading Instagram stories and carousels with pictures using `gallery-dl` when `yt-dlp` fails.
 - To enable this feature, ensure you have `gallery-dl` installed and configured.
-- The bot will automatically fallback to `gallery-dl` for Instagram URLs without "reels" when `yt-dlp` fails.
+- The bot will automatically fall back to `gallery-dl` for Instagram URLs without "reels" when `yt-dlp` fails.
 - The same cookies file used for `yt-dlp` can be used for `gallery-dl`
 
 ## Access Control with Safe List
