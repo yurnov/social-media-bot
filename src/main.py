@@ -270,6 +270,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
 
     finally:
         if media_path:
+            debug("Cleaning up temporary files.")
             cleanup_file(media_path)
 
 
@@ -305,6 +306,11 @@ async def send_video(update: Update, video: str, has_spoiler: bool) -> None:
     """
     try:
         with open(video, 'rb') as video_file:
+            debug("Sending video to chat.")
+            debug("Video has spoiler: %s", has_spoiler)
+            debug("Video path: %s", video)
+            debug("Chat ID: %s", update.message.chat.id)
+            debug("Video path type: %s", type(video))
             await update.message.chat.send_video(
                 video=video_file,
                 has_spoiler=has_spoiler,
