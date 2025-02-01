@@ -3,6 +3,7 @@
 import os
 import random
 import json
+import time
 from functools import lru_cache
 from dotenv import load_dotenv
 from telegram import Update
@@ -179,6 +180,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
     Returns:
         None
     """
+    THROTTLE = False
     video_path = None
     if not update.message or not update.message.text:
         return
@@ -236,6 +238,11 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
         else:
             media_path.append(return_path)
 
+        # Ensure that not more than 10 media files are processed
+        if len(media_path) > 10:
+            debug("Too many media files to process, enabling throttle. Amount: %s", len(media_path))
+            THROTTLE = True
+
         for pathobj in media_path:
 
             # Create a lists of video and picture paths
@@ -261,10 +268,18 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
                 await update.message.reply_text("The video is too large to send (over 50MB).")
                 continue  # Stop further execution for this video
 
+            # wait 5 seconds before sending the next video if throttle is enabled
+            if THROTTLE:
+                time.sleep(5)
+
             # Send the video to the chat
             await send_video(update, video, has_spoiler)
 
         for pic in pic_path:
+            # wait 5 seconds before sending the next video if throttle is enabled
+            if THROTTLE:
+                time.sleep(5)
+
             # Send the picture to the chat
             await send_pic(update, pic)
 
