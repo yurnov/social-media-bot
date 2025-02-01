@@ -194,19 +194,22 @@ def download_video(url):
     ]
 
     debug("Downloading video from URL: %s", url)
-    result_path = None  # Initialize the result variable
+    debug("Downloading video to temp_dir full path: %s", os.path.abspath(temp_dir))
+    result_path = temp_dir  # Initialize the result variable
 
     try:
         subprocess.run(command, check=True, timeout=120)
         for filename in os.listdir(temp_dir):
             if filename.endswith(".mp4"):
                 result_path = os.path.join(temp_dir, filename)
+                debug("Downloaded video found at path: %s", result_path)
                 break  # Exit the loop once the file is found
     except subprocess.CalledProcessError as e:
         error("Error downloading video: %s", e)
     except subprocess.TimeoutExpired as e:
         error("Download process timed out: %s", e)
     except (OSError, IOError) as e:
+        debug("Downloading video from URL: %s", url)
         error("File system error occurred: %s", e)
     except yt_dlp.utils.DownloadError as e:
         error("Download error occurred: %s", e)
@@ -216,9 +219,9 @@ def download_video(url):
     return result_path  # Return the result variable at the end
 
 
-def cleanup_file(video_path):
+def cleanup(video_path):
     """
-    Deletes a video file and its containing directory.
+    Cleans up temporary files by deleting the specified video file and its containing directory.
 
     This function attempts to remove the specified video file and
     its parent directory. Logs are printed if debugging is enabled.
@@ -229,9 +232,19 @@ def cleanup_file(video_path):
     Logs:
         Logs messages about the deletion process or any errors encountered.
     """
-    debug("Video to delete %s", video_path)
+    debug("Temporary directory to delete %s", video_path)
+
+    if os.path.isdir(video_path):
+        debug("Temporary directory is empty: %s", video_path)
+        temp_dir = video_path
+    else:
+        debug("Temporary directory is not empty: %s", os.path.dirname(video_path))
+        temp_dir = os.path.dirname(video_path)
     try:
-        shutil.rmtree(os.path.dirname(video_path))
-        debug("Video deleted %s", video_path)
+        shutil.rmtree(temp_dir)
+        if os.path.exists(video_path):
+            error("Temporary directory still exists after cleanup: %s", video_path)
+        else:
+            debug("Temporary directory successfully deleted: %s", video_path)
     except (OSError, IOError) as cleanup_error:
         error("Error deleting file: %s", cleanup_error)
