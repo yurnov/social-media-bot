@@ -291,7 +291,7 @@ def download_video(url):
     return result_path  # Return the result variable at the end
 
 
-def cleanup_file(video_path):
+def cleanup_file(media_path):
     """
     Deletes a video file and its containing directory.
 
@@ -304,9 +304,23 @@ def cleanup_file(video_path):
     Logs:
         Logs messages about the deletion process or any errors encountered.
     """
-    debug("Video to delete %s", video_path)
+
+    folder_to_delete = None
+    if isinstance(media_path, str):
+        try:
+            folder_to_delete = Path(media_path).parts[1])
+        except (OSError, IOError):
+            debug("Unable to find temp folder for %s", media_path)
+            return
+    if isinstance(media_path, list):
+        try:
+            folder_to_delete = Path(media_path[0]).parts[1])
+        except (OSError, IOError):
+            debug("Unable to find temp folder for %s", media_path[0])
+            return
+
     try:
-        shutil.rmtree(os.path.dirname(video_path))
-        debug("Video deleted %s", video_path)
+        shutil.rmtree(folder_to_delete)
+        debug("Temp media folder %s deleted", folder_to_delete)
     except (OSError, IOError) as cleanup_error:
-        error("Error deleting file: %s", cleanup_error)
+        error("Error deleting folder: %s", cleanup_error)

@@ -222,37 +222,54 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
     debug("Video is not too long or metadata is not available. Starting download.")
 
     try:
-        video_path = download_video(url)
-        debug("Video downloaded to: %s", video_path)
+        # media_path can be string or list of strings
+        media_path = download_video(url)
+        video_path = [] # Initilize empty list of video paths
+        pic_path = [] # Initilize empty list of picture paths
 
-        # Check if video was downloaded
-        if not video_path or not os.path.exists(video_path):
-            debug("Video download failed or file does not exist.")
-            return
+        for path in media_path:
+            debug("Media downloaded to: %s", video_path)
 
-        # Compress video if it's larger than 50MB
-        # do not process compression if video is too long
-        if is_video_duration_over_limits(video_path):
-            await update.message.reply_text("The video is too large to send (over 50MB).")
-            return
+            # Create a lists of video and picture paths
+            if path.endswith(".mp4"):
+                video_path.append(path)
+            elif path.endswith(".jpg", ".jpeg", ".png"):
+                pic_path.append(path)
 
-        if is_large_file(video_path):
-            compress_video(video_path)
+        for video in video_path:
+            # Compress video if it's larger than 50MB
+            # do not process compression if video is too long
+            if is_video_duration_over_limits(video):
+                await update.message.reply_text("The video is too large to send (over 50MB).")
+                continue  # Drop the video and continue to the next one
 
-        # Check for spoiler flag
-        has_spoiler = spoiler_in_message(update.message.entities)
+            if is_large_file(video):
+                compress_video(video)
 
-        if is_large_file(video_path):
-            await update.message.reply_text("The video is too large to send (over 50MB).")
-            return  # Stop further execution
+            # Check for spoiler flag
+            has_spoiler = spoiler_in_message(update.message.entities)
 
-        # Send the video to the chat
-        await send_video(update, video_path, has_spoiler)
+            if is_large_file(video):
+                await update.message.reply_text("The video is too large to send (over 50MB).")
+                continue  # Stop further execution for this video
+
+            # Send the video to the chat
+            await send_video(update, video, has_spoiler)
+
+    for pic in pic_path:
+        # Send the picture to the chat
+        with open(pic, 'rb') as pic_file:
+            await update.message.chat.send_photo(
+                photo=pic_file,
+                disable_notification=True,
+                write_timeout=8000,
+                read_timeout=8000,
+            )
+
 
     finally:
-        # Clean up temporary files
-        if video_path and os.path.exists(video_path):
-            cleanup_file(video_path)
+        if media_path:
+            cleanup_file(media_path)
 
 
 async def respond_with_bot_message(update: Update) -> None:
