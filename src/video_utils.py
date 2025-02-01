@@ -5,6 +5,7 @@ import os
 import shutil
 import subprocess
 import tempfile
+import re
 import yt_dlp  # Ensure yt_dlp is installed and available
 from dotenv import load_dotenv
 from logger import debug, error
@@ -181,6 +182,11 @@ def download_instagram_media(url, temp_dir):
     """
     result_path = None  # Initialize the result variable
 
+    # Validate Instagram URL
+    if not re.match(r'^https?://(?:www\.)?instagram\.com/[^/]+/[^/]+/?.*$', url):
+        error("Invalid Instagram URL")
+        return None
+
     # Ensure that reels not in the URL
     if "reel" in url:
         error("Reels shoud be handled by the yt-dlp")
@@ -257,7 +263,14 @@ def download_video(url):
         error("Error downloading video: %s", e)
         if "[Instagram]" in str(e) and "No video formats found!" in str(e):
             debug("yt-dlp failed for Instagram URL, trying gallery-dl")
-            result_path = download_instagram_media(url, temp_dir)
+        try:
+            result_path = download_instagram_media(url)
+            if result_path:
+                debug("Successfully downloaded Instagram media using gallery-dl")
+            else:
+                error("Failed to download Instagram media using gallery-dl")
+        except Exception as e:
+            error("Unexpected error during Instagram download: %s", e)
     except subprocess.TimeoutExpired as e:
         error("Download process timed out: %s", e)
     except (OSError, IOError) as e:
@@ -266,6 +279,9 @@ def download_video(url):
         error("Download error occurred: %s", e)
     except yt_dlp.utils.ExtractorError as e:
         error("Extractor error occurred: %s", e)
+    finally:
+        if result_path is None:
+            shutil.rmtree(temp_dir)
 
     return result_path  # Return the result variable at the end
 
