@@ -269,7 +269,7 @@ def download_video(url):
                 debug("Successfully downloaded Instagram media using gallery-dl")
             else:
                 error("Failed to download Instagram media using gallery-dl")
-        except Exception as ed: # pylint: disable=broad-except
+        except Exception as ed:  # pylint: disable=broad-except
             error("Unexpected error during Instagram download: %s", ed)
     except subprocess.TimeoutExpired as e:
         error("Download process timed out: %s", e)
