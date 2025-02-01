@@ -264,13 +264,13 @@ def download_video(url):
         if "[Instagram]" in str(e) and "No video formats found!" in str(e):
             debug("yt-dlp failed for Instagram URL, trying gallery-dl")
         try:
-            result_path = download_instagram_media(url)
+            result_path = download_instagram_media(url, temp_dir)
             if result_path:
                 debug("Successfully downloaded Instagram media using gallery-dl")
             else:
                 error("Failed to download Instagram media using gallery-dl")
-        except Exception as e:
-            error("Unexpected error during Instagram download: %s", e)
+        except Exception as ed: # pylint: disable=broad-except
+            error("Unexpected error during Instagram download: %s", ed)
     except subprocess.TimeoutExpired as e:
         error("Download process timed out: %s", e)
     except (OSError, IOError) as e:
