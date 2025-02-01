@@ -223,7 +223,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
 
     try:
         # media_path can be string or list of strings
-        media_path = [] # Initilize empty list of media paths
+        media_path = []  # Initilize empty list of media paths
         video_path = []  # Initilize empty list of video paths
         pic_path = []  # Initilize empty list of picture paths
         return_path = download_video(url)
