@@ -165,7 +165,7 @@ def get_video_duration(video_path):
         return None
 
 
-def download_instagram_media(url, temp_dir):
+def download_instagram_images(url, temp_dir):
     """
     Downloads Instagram media using gallery-dl.
 
@@ -263,7 +263,7 @@ def download_video(url):
         if "[Instagram]" in str(e) and "No video formats found!" in str(e):
             debug("yt-dlp failed for Instagram URL, trying gallery-dl")
         try:
-            result_path = download_instagram_media(url, temp_dir)
+            result_path = download_instagram_images(url, temp_dir)
             if result_path:
                 debug("Successfully downloaded Instagram media using gallery-dl")
             else:
