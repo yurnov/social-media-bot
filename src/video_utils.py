@@ -298,7 +298,7 @@ def download_media(url):
     return result_path  # Return the result variable at the end
 
 
-def cleanup_file(media_path):
+def cleanup(media_path):
     """
     Cleans up temporary files by deleting the specified video file and its containing directory.
 

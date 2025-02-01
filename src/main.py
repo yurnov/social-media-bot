@@ -219,13 +219,13 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
             # Create a lists of video and picture paths
             if pathobj.endswith(".mp4"):
                 # do not process if video is too long
-                if is_video_duration_over_limits(video):
+                if is_video_duration_over_limits(pathobj):
                     await update.message.reply_text("The video is too long to send (over 12min).")
                     continue  # Drop the video and continue to the next one
                 # Compress the video if it's too large
-                if is_large_file(video):
-                    compress_video(video)
-                    if is_large_file(video):
+                if is_large_file(pathobj):
+                    compress_video(pathobj)
+                    if is_large_file(pathobj):
                         await update.message.reply_text("The video is too large to send (over 50MB).")
                         continue  # Stop further execution for this video
                 video_path.append(pathobj)
@@ -255,7 +255,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
 
     finally:
         if media_path:
-            cleanup_file(media_path)
+            cleanup(media_path)
 
 
 async def respond_with_bot_message(update: Update) -> None:
