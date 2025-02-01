@@ -9,7 +9,7 @@ import tempfile
 import yt_dlp
 from dotenv import load_dotenv
 from logger import debug, error
-from pathlib import Path
+from pathlib import PurePath
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -311,8 +311,9 @@ def cleanup_file(media_path):
 
     folder_to_delete = None
     if isinstance(media_path, list):
+        debug("Media path is a list: %s", media_path)
         try:
-            folder_to_delete = "/" + str(Path(media_path[0].parts[1])) + str(Path(media_path[0].parts[1]))
+            folder_to_delete = "/" + str(PurePath(media_path[0]).parts[1]) + str(PurePath(media_path[0]).parts[2])
             debug("Temp folder to delete: %s", folder_to_delete)
         except (OSError, IOError):
             debug("Unable to find temp folder for %s", media_path[0])
