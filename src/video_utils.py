@@ -163,6 +163,7 @@ def get_video_duration(video_path):
         error("Error getting video duration: %s", e)
         return None
 
+
 def download_instagram_media(url):
     """
     Downloads Instagram media using gallery-dl.
@@ -203,6 +204,7 @@ def download_instagram_media(url):
         error("File system error occurred: %s", e)
 
     return result_path  # Return the result variable at the end
+
 
 def download_video(url):
     """
