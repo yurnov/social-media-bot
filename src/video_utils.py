@@ -264,7 +264,6 @@ def download_video(url):
         for filename in os.listdir(temp_dir):
             if filename.endswith(".mp4"):
                 result_path = os.path.join(temp_dir, filename)
-                debug("Video file found: %s", result_path)
                 return result_path  # Exit the loop once the file is found
 
     except subprocess.CalledProcessError as e:
@@ -311,10 +310,8 @@ def cleanup_file(media_path):
 
     folder_to_delete = None
     if isinstance(media_path, list):
-        debug("Media path is a list: %s", media_path)
         try:
             folder_to_delete = "/" + str(PurePath(media_path[0]).parts[1]) + str(PurePath(media_path[0]).parts[2])
-            debug("Temp folder to delete: %s", folder_to_delete)
         except (OSError, IOError):
             debug("Unable to find temp folder for %s", media_path[0])
             return
