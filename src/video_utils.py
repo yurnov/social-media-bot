@@ -164,7 +164,7 @@ def get_video_duration(video_path):
         return None
 
 
-def download_instagram_media(url):
+def download_instagram_media(url, temp_dir):
     """
     Downloads Instagram media using gallery-dl.
 
@@ -174,11 +174,18 @@ def download_instagram_media(url):
 
     Parameters:
         url (str): The URL of the Instagram media to download.
+        temp_dir (str): The path to the temporary directory to store the downloaded media.
 
     Returns:
         str: The path to the downloaded media file if successful, or None if the download fails.
     """
-    temp_dir = tempfile.mkdtemp()
+    result_path = None  # Initialize the result variable
+
+    # Ensure that reels not in the URL
+    if "reel" in url:
+        error("Reels shoud be handled by the yt-dlp")
+        return None
+
     command = [
         "gallery-dl",  # Assuming gallery-dl is installed and in the PATH
         *(["--cookies", "instagram_cookies.txt"] if INSTACOOKIES else []),
@@ -250,7 +257,7 @@ def download_video(url):
         error("Error downloading video: %s", e)
         if "[Instagram]" in str(e) and "No video formats found!" in str(e):
             debug("yt-dlp failed for Instagram URL, trying gallery-dl")
-            result_path = download_instagram_media(url)
+            result_path = download_instagram_media(url, temp_dir)
     except subprocess.TimeoutExpired as e:
         error("Download process timed out: %s", e)
     except (OSError, IOError) as e:
