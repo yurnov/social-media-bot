@@ -10,11 +10,12 @@ from telegram.error import TimedOut, NetworkError, TelegramError
 from telegram.ext import Application, MessageHandler, filters, ContextTypes
 from telegram.constants import MessageEntityType
 from logger import error, info, debug
+from general_error_handler import error_handler
 from permissions import inform_user_not_allowed, is_user_or_chat_not_allowed, supported_sites
 from video_utils import (
     compress_video,
     download_video,
-    cleanup_file,
+    cleanup,
     is_video_duration_over_limits,
     is_video_too_long_to_download,
 )
@@ -23,8 +24,6 @@ load_dotenv()
 
 # Default to Ukrainian if not set
 language = os.getenv("LANGUAGE", "ua").lower()
-admins_chat_ids = os.getenv("ADMINS_CHAT_IDS")
-send_error_to_admin = os.getenv("SEND_ERROR_TO_ADMIN", "False").lower() == "true"
 
 
 # Cache responses from JSON file
@@ -119,34 +118,6 @@ def is_large_file(file_path: str, max_size_mb: int = 50) -> bool:
     return os.path.exists(file_path) and (os.path.getsize(file_path) / (1024 * 1024)) > max_size_mb
 
 
-async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Log the error and send a message to the admins.
-    Works only if SEND_ERROR_TO_ADMIN=True in .env file. and ADMINS_CHAT_IDS is set.
-    If SEND_ERROR_TO_ADMIN=False, the error will be logged but not sent to admins.
-    Works only for Exceptions errors that are not handled by the bot code.
-    """
-    if update is None or update.effective_sender is None:
-        error("Update or effective_sender is None. Cannot log error.")
-        return  # Exit the function if update is not valid
-
-    username = update.effective_sender.username
-    debug("User username: %s", username)
-    # Log the error
-    debug("Update %s caused error %s", update, context.error)
-    debug("send_error_to_admin: %s, admin_chat_id: %s", send_error_to_admin, admins_chat_ids)
-    if send_error_to_admin and admins_chat_ids:
-        admin_ids = admins_chat_ids.split(",")  # Split the string into a list of IDs
-        for admin_chat_id in admin_ids:
-            await context.bot.send_message(
-                chat_id=admin_chat_id.strip(),  # Strip any whitespace
-                text=f"`{context.error}` \n\nWho triggered the error: `@{username}`.\nUrl was {update.message.text}",
-                disable_web_page_preview=True,
-                parse_mode='Markdown',
-            )
-    else:
-        debug("Admin chat IDs are not set; error message not sent to admins.")
-
-
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  # pylint: disable=unused-argument
     """
     Handles incoming messages from the Telegram bot.
@@ -223,7 +194,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
 
     try:
         video_path = download_video(url)
-        debug("Video downloaded to: %s", video_path)
+
+        if video_path and os.path.isdir(video_path) and not os.listdir(video_path):
+            debug("No videos in temporary directory: %s. Cleaning up.", video_path)
+            return
 
         # Check if video was downloaded
         if not video_path or not os.path.exists(video_path):
@@ -238,13 +212,12 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
 
         if is_large_file(video_path):
             compress_video(video_path)
+            if is_large_file(video_path):
+                await update.message.reply_text("The video is too large to send (over 50MB).")
+                return  # Stop further execution
 
         # Check for spoiler flag
         has_spoiler = spoiler_in_message(update.message.entities)
-
-        if is_large_file(video_path):
-            await update.message.reply_text("The video is too large to send (over 50MB).")
-            return  # Stop further execution
 
         # Send the video to the chat
         await send_video(update, video_path, has_spoiler)
@@ -252,7 +225,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
     finally:
         # Clean up temporary files
         if video_path and os.path.exists(video_path):
-            cleanup_file(video_path)
+            cleanup(video_path)
 
 
 async def respond_with_bot_message(update: Update) -> None:
