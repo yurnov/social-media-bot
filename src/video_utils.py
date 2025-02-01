@@ -9,7 +9,7 @@ import tempfile
 import yt_dlp
 from dotenv import load_dotenv
 from logger import debug, error
-from pathlib import PurePath
+from pathlib import PurePath, Path
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -207,14 +207,15 @@ def download_instagram_images(url, temp_dir):
         result_path = []  # Initialize the result variable as a empty list
         # Use Path.rglob to recursively search for files in the temp directory
         # as the output contains subdirectories and may contain multiple files
-        for file in [str(file) for file in Path(temp_output).rglob("*")]:
-            if filename.endswith((".mp4", ".jpg", ".jpeg", ".png")):
+        for file in [str(file) for file in Path(temp_dir).rglob("*")]:
+            if file.endswith((".mp4", ".jpg", ".jpeg", ".png")):
                 # Append the file path to the result list
                 result_path.append(file)
-                debug("Instagram media file found: %s", file)
         if not result_path:
             error("No media files found in the gallery-dl output")
             return None
+
+        return result_path  # Return the result variable if successful
     except subprocess.CalledProcessError as e:
         error("Error downloading Instagram media: %s", e)
     except subprocess.TimeoutExpired as e:
@@ -311,7 +312,7 @@ def cleanup_file(media_path):
     folder_to_delete = None
     if isinstance(media_path, list):
         try:
-            folder_to_delete = "/" + str(PurePath(media_path[0]).parts[1]) + str(PurePath(media_path[0]).parts[2])
+            folder_to_delete = "/" + str(PurePath(media_path[0]).parts[1]) + "/" + str(PurePath(media_path[0]).parts[2])
         except (OSError, IOError):
             debug("Unable to find temp folder for %s", media_path[0])
             return

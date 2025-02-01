@@ -227,16 +227,19 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
         video_path = []  # Initilize empty list of video paths
         pic_path = []  # Initilize empty list of picture paths
         return_path = download_video(url)
-        # Addpend the return_path to media_path
-        media_path.append(return_path)
+        # Create a list of media paths
+        if isinstance(return_path, list):
+            media_path.extend(return_path)
+        else:
+            media_path.append(return_path)
 
-        for path in media_path:
+        for pathobj in media_path:
 
             # Create a lists of video and picture paths
-            if path.endswith(".mp4"):
-                video_path.append(path)
-            elif path.endswith(".jpg", ".jpeg", ".png"):
-                pic_path.append(path)
+            if pathobj.endswith(".mp4"):
+                video_path.append(pathobj)
+            elif pathobj.endswith((".jpg", ".jpeg", ".png")):
+                pic_path.append(pathobj)
 
         for video in video_path:
             # Compress video if it's larger than 50MB
@@ -260,7 +263,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
 
         for pic in pic_path:
             # Send the picture to the chat
-            send_pic(update, pic)
+            await send_pic(update, pic)
 
     finally:
         if media_path:
@@ -312,7 +315,7 @@ async def send_video(update: Update, video: str, has_spoiler: bool) -> None:
         await update.message.reply_text(f"Error sending video: {str(e)}. Please try again later.")
 
 
-async def send_pic(update: Update, picture: str) -> None:
+async def send_pic(update: Update, pic: str) -> None:
     """
     Sends the picture to the chat.
 
@@ -325,7 +328,7 @@ async def send_pic(update: Update, picture: str) -> None:
         None
     """
     try:
-        with open(picture, 'rb') as pic_file:
+        with open(pic, 'rb') as pic_file:
             await update.message.chat.send_photo(
                 photo=pic_file,
                 disable_notification=True,
