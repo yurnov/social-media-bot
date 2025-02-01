@@ -166,7 +166,7 @@ def get_video_duration(video_path):
         return None
 
 
-def download_instagram_images(url, temp_dir):
+def download_instagram_media(url, temp_dir):
     """
     Downloads Instagram media using gallery-dl.
 
@@ -226,7 +226,7 @@ def download_instagram_images(url, temp_dir):
     return result_path  # Return the result variable at the end
 
 
-def download_video(url):
+def download_media(url):
     """
     Downloads a video from the specified URL using yt-dlp and saves it as an MP4 file.
 
@@ -234,13 +234,14 @@ def download_video(url):
     in a temporary directory with a filename based on the video's title. The function
     returns the path to the downloaded video file if successful. If the download fails, "[Instagram]"
     and "No video formats found!" present in the error message, the function will invoke
-    download_instagram_images based on `gallery-dl`.
+    download_instagram_media based on `gallery-dl`, and will return a list of media (may contain
+    videos, pictures or mix of them).
 
     Parameters:
         url (str): The URL of the video to download.
 
     Returns:
-        str: The path to the downloaded MP4 video file if successful, or None if the download fails.
+        list: The list of path to the downloaded media files if successful, or None if the download fails.
 
     Exceptions:
         Handles exceptions for subprocess errors, timeouts, or unexpected errors during the
@@ -273,7 +274,7 @@ def download_video(url):
         if "[Instagram]" in str(e) and "No video formats found!" in str(e):
             debug("yt-dlp failed for Instagram URL, trying gallery-dl")
         try:
-            result_path = download_instagram_images(url, temp_dir)
+            result_path = download_instagram_media(url, temp_dir)
             if result_path:
                 debug("Successfully downloaded Instagram media using gallery-dl")
                 return result_path

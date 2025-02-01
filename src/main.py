@@ -15,7 +15,7 @@ from general_error_handler import error_handler
 from permissions import inform_user_not_allowed, is_user_or_chat_not_allowed, supported_sites
 from video_utils import (
     compress_video,
-    download_video,
+    download_media,
     cleanup,
     is_video_duration_over_limits,
     is_video_too_long_to_download,
@@ -202,7 +202,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
         media_path = []  # Initilize empty list of media paths
         video_path = []  # Initilize empty list of video paths
         pic_path = []  # Initilize empty list of picture paths
-        return_path = download_video(url)
+        return_path = download_media(url)
         # Create a list of media paths
         if isinstance(return_path, list):
             media_path.extend(return_path)
