@@ -258,15 +258,16 @@ def download_video(url):
     ]
 
     debug("Downloading video from URL: %s", url)
-    result_path = None  # Initialize the result variable
+    debug("Downloading video to temp_dir full path: %s", os.path.abspath(temp_dir))
+    result_path = temp_dir  # Initialize the result variable
 
     try:
         subprocess.run(command, check=True, timeout=120)
         for filename in os.listdir(temp_dir):
             if filename.endswith(".mp4"):
                 result_path = os.path.join(temp_dir, filename)
-                return result_path  # Exit the loop once the file is found
-
+                debug("Downloaded video found at path: %s", result_path)
+                break  # Exit the loop once the file is found
     except subprocess.CalledProcessError as e:
         error("Error downloading video: %s", e)
         if "[Instagram]" in str(e) and "No video formats found!" in str(e):
@@ -283,6 +284,7 @@ def download_video(url):
     except subprocess.TimeoutExpired as e:
         error("Download process timed out: %s", e)
     except (OSError, IOError) as e:
+        debug("Downloading video from URL: %s", url)
         error("File system error occurred: %s", e)
     except yt_dlp.utils.DownloadError as e:
         error("Download error occurred: %s", e)
@@ -297,7 +299,7 @@ def download_video(url):
 
 def cleanup_file(media_path):
     """
-    Deletes a video file and its containing directory.
+    Cleans up temporary files by deleting the specified video file and its containing directory.
 
     This function attempts to remove the specified video file and
     its parent directory. Logs are printed if debugging is enabled.
@@ -317,8 +319,13 @@ def cleanup_file(media_path):
             debug("Unable to find temp folder for %s", media_path[0])
             return
 
+    debug("Temporary directory to delete %s", folder_to_delete)
     try:
         shutil.rmtree(folder_to_delete)
         debug("Temp media folder %s deleted", folder_to_delete)
+        if os.path.exists(folder_to_delete):
+            error("Temporary directory still exists after cleanup: %s", folder_to_delete)
+        else:
+            debug("Temporary directory successfully deleted: %s", folder_to_delete)
     except (OSError, IOError) as cleanup_error:
         error("Error deleting folder: %s", cleanup_error)

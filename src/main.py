@@ -11,11 +11,12 @@ from telegram.error import TimedOut, NetworkError, TelegramError
 from telegram.ext import Application, MessageHandler, filters, ContextTypes
 from telegram.constants import MessageEntityType
 from logger import error, info, debug
+from general_error_handler import error_handler
 from permissions import inform_user_not_allowed, is_user_or_chat_not_allowed, supported_sites
 from video_utils import (
     compress_video,
     download_video,
-    cleanup_file,
+    cleanup,
     is_video_duration_over_limits,
     is_video_too_long_to_download,
 )
@@ -24,8 +25,6 @@ load_dotenv()
 
 # Default to Ukrainian if not set
 language = os.getenv("LANGUAGE", "ua").lower()
-admins_chat_ids = os.getenv("ADMINS_CHAT_IDS")
-send_error_to_admin = os.getenv("SEND_ERROR_TO_ADMIN", "False").lower() == "true"
 
 TELEGRAM_WRITE_TIMEOUT = 8000
 TELEGRAM_READ_TIMEOUT = 8000
@@ -121,34 +120,6 @@ def is_large_file(file_path: str, max_size_mb: int = 50) -> bool:
         bool: True if the file size exceeds the maximum size, False otherwise.
     """
     return os.path.exists(file_path) and (os.path.getsize(file_path) / (1024 * 1024)) > max_size_mb
-
-
-async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Log the error and send a message to the admins.
-    Works only if SEND_ERROR_TO_ADMIN=True in .env file. and ADMINS_CHAT_IDS is set.
-    If SEND_ERROR_TO_ADMIN=False, the error will be logged but not sent to admins.
-    Works only for Exceptions errors that are not handled by the bot code.
-    """
-    if update is None or update.effective_sender is None:
-        error("Update or effective_sender is None. Cannot log error.")
-        return  # Exit the function if update is not valid
-
-    username = update.effective_sender.username
-    debug("User username: %s", username)
-    # Log the error
-    debug("Update %s caused error %s", update, context.error)
-    debug("send_error_to_admin: %s, admin_chat_id: %s", send_error_to_admin, admins_chat_ids)
-    if send_error_to_admin and admins_chat_ids:
-        admin_ids = admins_chat_ids.split(",")  # Split the string into a list of IDs
-        for admin_chat_id in admin_ids:
-            await context.bot.send_message(
-                chat_id=admin_chat_id.strip(),  # Strip any whitespace
-                text=f"`{context.error}` \n\nWho triggered the error: `@{username}`.\nUrl was {update.message.text}",
-                disable_web_page_preview=True,
-                parse_mode='Markdown',
-            )
-    else:
-        debug("Admin chat IDs are not set; error message not sent to admins.")
 
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  # pylint: disable=unused-argument
@@ -247,26 +218,25 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
 
             # Create a lists of video and picture paths
             if pathobj.endswith(".mp4"):
+                # do not process if video is too long
+                if is_video_duration_over_limits(video):
+                    await update.message.reply_text("The video is too long to send (over 12min).")
+                    continue  # Drop the video and continue to the next one
+                # Compress the video if it's too large
+                if is_large_file(video):
+                    compress_video(video)
+                    if is_large_file(video):
+                        await update.message.reply_text("The video is too large to send (over 50MB).")
+                        continue  # Stop further execution for this video
                 video_path.append(pathobj)
+
             elif pathobj.endswith((".jpg", ".jpeg", ".png")):
                 pic_path.append(pathobj)
 
         for video in video_path:
-            # Compress video if it's larger than 50MB
-            # do not process compression if video is too long
-            if is_video_duration_over_limits(video):
-                await update.message.reply_text("The video is too long to send (over 12min).")
-                continue  # Drop the video and continue to the next one
-
-            if is_large_file(video):
-                compress_video(video)
 
             # Check for spoiler flag
             has_spoiler = spoiler_in_message(update.message.entities)
-
-            if is_large_file(video):
-                await update.message.reply_text("The video is too large to send (over 50MB).")
-                continue  # Stop further execution for this video
 
             # wait 5 seconds before sending the next video if throttle is enabled
             if THROTTLE:
