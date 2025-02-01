@@ -9,6 +9,7 @@ notifications.
 Dependencies:
 - telegram: For interacting with the Telegram Bot API.
 """
+
 import os
 from telegram import Update
 from telegram.ext import ContextTypes
@@ -16,6 +17,7 @@ from logger import error, debug
 
 admins_chat_ids = os.getenv("ADMINS_CHAT_IDS")
 send_error_to_admin = os.getenv("SEND_ERROR_TO_ADMIN", "False").lower() == "true"
+
 
 async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Log the error and send a message to the admins.
