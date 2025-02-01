@@ -308,13 +308,13 @@ def cleanup_file(media_path):
     folder_to_delete = None
     if isinstance(media_path, str):
         try:
-            folder_to_delete = Path(media_path).parts[1])
+            folder_to_delete = Path(media_path).parts[1]
         except (OSError, IOError):
             debug("Unable to find temp folder for %s", media_path)
             return
     if isinstance(media_path, list):
         try:
-            folder_to_delete = Path(media_path[0]).parts[1])
+            folder_to_delete = Path(media_path[0]).parts[1]
         except (OSError, IOError):
             debug("Unable to find temp folder for %s", media_path[0])
             return

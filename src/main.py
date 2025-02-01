@@ -224,8 +224,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
     try:
         # media_path can be string or list of strings
         media_path = download_video(url)
-        video_path = [] # Initilize empty list of video paths
-        pic_path = [] # Initilize empty list of picture paths
+        video_path = []  # Initilize empty list of video paths
+        pic_path = []  # Initilize empty list of picture paths
 
         for path in media_path:
             debug("Media downloaded to: %s", video_path)
@@ -256,16 +256,15 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
             # Send the video to the chat
             await send_video(update, video, has_spoiler)
 
-    for pic in pic_path:
-        # Send the picture to the chat
-        with open(pic, 'rb') as pic_file:
-            await update.message.chat.send_photo(
-                photo=pic_file,
-                disable_notification=True,
-                write_timeout=8000,
-                read_timeout=8000,
-            )
-
+        for pic in pic_path:
+            # Send the picture to the chat
+            with open(pic, 'rb') as pic_file:
+                await update.message.chat.send_photo(
+                    photo=pic_file,
+                    disable_notification=True,
+                    write_timeout=8000,
+                    read_timeout=8000,
+                )
 
     finally:
         if media_path:
