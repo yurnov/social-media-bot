@@ -280,8 +280,8 @@ def download_media(url):
                 return result_path
             else:
                 error("Failed to download Instagram media using gallery-dl")
-        except Exception as e:  # pylint: disable=broad-except
-            error("Unexpected error during Instagram download images by gallery-dl: %s", e)
+        except Exception as gallery_dl_error:  # pylint: disable=broad-except
+            error("Unexpected error during Instagram download images by gallery-dl: %s", gallery_dl_error)
     except subprocess.TimeoutExpired as e:
         error("Download process timed out: %s", e)
     except (OSError, IOError) as e:
