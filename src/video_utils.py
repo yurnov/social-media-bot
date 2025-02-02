@@ -322,7 +322,6 @@ def cleanup(media_path):
     debug("Temporary directory to delete %s", folder_to_delete)
     try:
         shutil.rmtree(folder_to_delete)
-        debug("Temp media folder %s deleted", folder_to_delete)
         if os.path.exists(folder_to_delete):
             error("Temporary directory still exists after cleanup: %s", folder_to_delete)
         else:
