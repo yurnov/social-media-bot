@@ -28,6 +28,7 @@ language = os.getenv("LANGUAGE", "uk").lower()
 if language == "ua":
     language = "uk"
 
+
 # Cache responses from JSON file
 @lru_cache(maxsize=1)
 def load_responses():
