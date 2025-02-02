@@ -234,15 +234,12 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
                 pic_path.append(pathobj)
 
         if len(video_path) > 1:
-            debug("Amount of videos: %s, let's group them", len(video_path))
             # Group videos
             video_path = [video_path[i : i + 2] for i in range(0, len(video_path), 2)]
             # TODO: Implement a total size calculation for the group of videos
             # and resort to sending them one by one if the total size exceeds the limit
-            debug("Grouped videos length: %s", len(video_path))
 
         if len(pic_path) > 1:
-            debug("Amount of photo: %s, let's group them", len(pic_path))
             # Group videos
             pic_path = [pic_path[i : i + 10] for i in range(0, len(pic_path), 10)]
             debug("Grouped pictures length: %s", len(pic_path))
@@ -325,8 +322,7 @@ async def send_video(update: Update, video, has_spoiler: bool) -> None:
         media_group = []
         for video_file in video:
             media_group.append(InputMediaVideo(open(video_file, 'rb')))
-        debug("Group of videos: %s", media_group)
-        debug("Sending a group of videos")
+        debug("Sending a group with number of videos: %s", len(media_group))
         try:
             await update.message.chat.send_media_group(
                 media=media_group,
@@ -368,8 +364,7 @@ async def send_pic(update: Update, pic) -> None:
         media_group = []  # Initilize empty list of media groups
         for pic_file in pic:
             media_group.append(InputMediaPhoto(open(pic_file, 'rb')))
-        debug("Group of pictures: %s", media_group)
-        debug("Sending a group of pictures")
+        debug("Sending a group with number of pictures: %s", len(media_group))
         # Send the media group
         try:
             await update.message.chat.send_media_group(
