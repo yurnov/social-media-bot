@@ -233,25 +233,38 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
             elif pathobj.endswith((".jpg", ".jpeg", ".png")):
                 pic_path.append(pathobj)
 
+        if len(video_path) > 1:
+            debug("Multiple videos to process, lets grop them")
+            # Group videos
+            video_path = [video_path[i : i + 2] for i in range(0, len(video_path), 2)]
+            # TODO: Implement a total size calculation for the group of videos
+            # and resort to sending them one by one if the total size exceeds the limit
+
+        if len(pic_path) > 1:
+            debug("Multiple pictures to process, lets grop them")
+            # Group videos
+            pic_path = [pic_path[i : i + 10] for i in range(0, len(pic_path), 10)]
+
         for video in video_path:
 
-            # Check for spoiler flag
-            has_spoiler = spoiler_in_message(update.message.entities)
-
-            # wait 5 seconds before sending the next video if throttle is enabled
-            if THROTTLE:
-                time.sleep(5)
+            if isinstance(video, str):  # Skip spoiler check for media groups
+                # Check for spoiler flag
+                has_spoiler = spoiler_in_message(update.message.entities)
+            else:
+                has_spoiler = False
 
             # Send the video to the chat
             await send_video(update, video, has_spoiler)
-
-        for pic in pic_path:
-            # wait 5 seconds before sending the next video if throttle is enabled
+            # wait 5 seconds before sending the next media throttle is enabled
             if THROTTLE:
                 time.sleep(5)
 
+        for pic in pic_path:
             # Send the picture to the chat
             await send_pic(update, pic)
+            # wait 5 seconds before sending the next video if throttle is enabled
+            if THROTTLE:
+                time.sleep(5)
 
     finally:
         if media_path:
@@ -276,54 +289,105 @@ async def respond_with_bot_message(update: Update) -> None:
     )
 
 
-async def send_video(update: Update, video: str, has_spoiler: bool) -> None:
+async def send_video(update: Update, video, has_spoiler: bool) -> None:
     """
     Sends the video to the chat.
 
     Args:
         update (telegram.Update): Represents the incoming update from the Telegram bot.
-        video (str): The path to the video file to send.
+        video (str or list): The path to the video file to send.
         has_spoiler (bool): Indicates if the message contains a spoiler.
 
     Returns:
         None
     """
-    try:
-        with open(video, 'rb') as video_file:
-            await update.message.chat.send_video(
-                video=video_file,
-                has_spoiler=has_spoiler,
+    # Send the single video
+    if isinstance(video, str):
+
+        try:
+            with open(video, 'rb') as video_file:
+                await update.message.chat.send_video(
+                    video=video_file,
+                    has_spoiler=has_spoiler,
+                    disable_notification=True,
+                    write_timeout=TELEGRAM_WRITE_TIMEOUT,
+                    read_timeout=TELEGRAM_READ_TIMEOUT,
+                )
+        except TimedOut as e:
+            error("Telegram timeout while sending video. %s", e)
+        except (NetworkError, TelegramError) as e:
+            await update.message.reply_text(f"Error sending video: {str(e)}. Please try again later.")
+
+    # Send the group of videos
+    elif isinstance(video, list):
+        media_group = []
+        for video_file in video:
+            media_group.append(
+                {
+                    'type': 'video',
+                    'media': f"attach://{video_file}",
+                }
+            )
+
+        try:
+            await update.message.chat.send_media_group(
+                media=media_group,
                 disable_notification=True,
                 write_timeout=TELEGRAM_WRITE_TIMEOUT,
                 read_timeout=TELEGRAM_READ_TIMEOUT,
             )
-    except TimedOut as e:
-        error("Telegram timeout while sending video. %s", e)
-    except (NetworkError, TelegramError) as e:
-        await update.message.reply_text(f"Error sending video: {str(e)}. Please try again later.")
+        except TimedOut as e:
+            error("Telegram timeout while sending group of videos. %s", e)
+        except (NetworkError, TelegramError) as e:
+            await update.message.reply_text(f"Error sending group of videos: {str(e)}. Please try again later.")
 
 
-async def send_pic(update: Update, pic: str) -> None:
+async def send_pic(update: Update, pic) -> None:
     """
     Sends the picture to the chat.
     Args:
         update (telegram.Update): Represents the incoming update from the Telegram bot.
-        pic (str): The path to the pictures file to send.
+        pic (str or list): The path to the pictures file to send.
     Returns:
         None
     """
-    try:
-        with open(pic, 'rb') as pic_file:
-            await update.message.chat.send_photo(
-                photo=pic_file,
+    if isinstance(pic, str):
+        # Send the single picture
+        try:
+            with open(pic, 'rb') as pic_file:
+                await update.message.chat.send_photo(
+                    photo=pic_file,
+                    disable_notification=True,
+                    write_timeout=TELEGRAM_WRITE_TIMEOUT,
+                    read_timeout=TELEGRAM_READ_TIMEOUT,
+                )
+        except TimedOut as e:
+            error("Telegram timeout while sending picture. %s", e)
+        except (NetworkError, TelegramError) as e:
+            await update.message.reply_text(f"Error sending picture: {str(e)}. Please try again later.")
+
+    elif isinstance(pic, list):
+        debug("Sending a group of pictures")
+        media_group = []  # Initilize empty list of media groups
+        for pic_file in pic:
+            media_group.append(
+                {
+                    'type': 'photo',
+                    'media': f"attach://{pic_file}",
+                }
+            )
+        # Send the media group
+        try:
+            await update.message.chat.send_media_group(
+                media=media_group,
                 disable_notification=True,
                 write_timeout=TELEGRAM_WRITE_TIMEOUT,
                 read_timeout=TELEGRAM_READ_TIMEOUT,
             )
-    except TimedOut as e:
-        error("Telegram timeout while sending picture. %s", e)
-    except (NetworkError, TelegramError) as e:
-        await update.message.reply_text(f"Error sending picture: {str(e)}. Please try again later.")
+        except TimedOut as e:
+            error("Telegram timeout while sending group of pictures. %s", e)
+        except (NetworkError, TelegramError) as e:
+            await update.message.reply_text(f"Error sending group of pictures: {str(e)}. Please try again later.")
 
 
 def main():
