@@ -23,15 +23,17 @@ from video_utils import (
 load_dotenv()
 
 # Default to Ukrainian if not set
-language = os.getenv("LANGUAGE", "ua").lower()
-
+language = os.getenv("LANGUAGE", "uk").lower()
+# Add backward compatibility for old language setting
+if language == "ua":
+    language = "uk"
 
 # Cache responses from JSON file
 @lru_cache(maxsize=1)
 def load_responses():
     """Function loading bot responses based on language setting."""
 
-    filename = "responses_ua.json" if language == "ua" else "responses_en.json"
+    filename = "responses_uk.json" if language == "uk" else "responses_en.json"
     try:
         with open(filename, "r", encoding="utf-8") as file:
             data = json.load(file)
@@ -40,7 +42,7 @@ def load_responses():
         # Return a minimal set of responses if no response files found
         not_found_responses = {
             "en": "Sorry, I'm having trouble loading my responses right now! 😅",
-            "ua": "Вибачте, у мене проблеми із завантаженням відповідей! 😅",
+            "uk": "Вибачте, у мене проблеми із завантаженням відповідей! 😅",
         }
         return not_found_responses[language]
 
