@@ -314,7 +314,8 @@ def cleanup(media_path):
     folder_to_delete = None
     if isinstance(media_path, list):
         try:
-            folder_to_delete = "/" + str(PurePath(media_path[0]).parts[1]) + "/" + str(PurePath(media_path[0]).parts[2])
+            first_media_path = PurePath(media_path[0])
+            folder_to_delete = f"/{first_media_path.parts[1]}/{first_media_path.parts[2]}"
         except (OSError, IOError):
             debug("Unable to find temp folder for %s", media_path[0])
             return
