@@ -6,7 +6,7 @@ import json
 import time
 from functools import lru_cache
 from dotenv import load_dotenv
-from telegram import Update
+from telegram import Update, InputMediaPhoto, InputMediaVideo
 from telegram.error import TimedOut, NetworkError, TelegramError
 from telegram.ext import Application, MessageHandler, filters, ContextTypes
 from telegram.constants import MessageEntityType
@@ -234,16 +234,18 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
                 pic_path.append(pathobj)
 
         if len(video_path) > 1:
-            debug("Multiple videos to process, lets grop them")
+            debug("Amount of videos: %s, let's group them", len(video_path))
             # Group videos
             video_path = [video_path[i : i + 2] for i in range(0, len(video_path), 2)]
             # TODO: Implement a total size calculation for the group of videos
             # and resort to sending them one by one if the total size exceeds the limit
+            debug("Grouped videos length: %s", len(video_path))
 
         if len(pic_path) > 1:
-            debug("Multiple pictures to process, lets grop them")
+            debug("Amount of photo: %s, let's group them", len(pic_path))
             # Group videos
             pic_path = [pic_path[i : i + 10] for i in range(0, len(pic_path), 10)]
+            debug("Grouped pictures length: %s", len(pic_path))
 
         for video in video_path:
 
@@ -322,13 +324,9 @@ async def send_video(update: Update, video, has_spoiler: bool) -> None:
     elif isinstance(video, list):
         media_group = []
         for video_file in video:
-            media_group.append(
-                {
-                    'type': 'video',
-                    'media': f"attach://{video_file}",
-                }
-            )
-
+            media_group.append(InputMediaVideo(open(video_file, 'rb')))
+        debug("Group of videos: %s", media_group)
+        debug("Sending a group of videos")
         try:
             await update.message.chat.send_media_group(
                 media=media_group,
@@ -367,15 +365,11 @@ async def send_pic(update: Update, pic) -> None:
             await update.message.reply_text(f"Error sending picture: {str(e)}. Please try again later.")
 
     elif isinstance(pic, list):
-        debug("Sending a group of pictures")
         media_group = []  # Initilize empty list of media groups
         for pic_file in pic:
-            media_group.append(
-                {
-                    'type': 'photo',
-                    'media': f"attach://{pic_file}",
-                }
-            )
+            media_group.append(InputMediaPhoto(open(pic_file, 'rb')))
+        debug("Group of pictures: %s", media_group)
+        debug("Sending a group of pictures")
         # Send the media group
         try:
             await update.message.chat.send_media_group(
