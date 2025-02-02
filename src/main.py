@@ -4,6 +4,7 @@ import os
 import random
 import json
 import time
+import asyncio
 from functools import lru_cache
 from dotenv import load_dotenv
 from telegram import Update, InputMediaPhoto, InputMediaVideo
@@ -240,7 +241,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
             # and resort to sending them one by one if the total size exceeds the limit
 
         if len(pic_path) > 1:
-            # Group videos
+            # Group pictures
             pic_path = [pic_path[i : i + 10] for i in range(0, len(pic_path), 10)]
             debug("Grouped pictures length: %s", len(pic_path))
 
@@ -256,14 +257,14 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
             await send_video(update, video, has_spoiler)
             # wait 5 seconds before sending the next media throttle is enabled
             if THROTTLE:
-                time.sleep(15)
+                await asyncio.sleep(15)
 
         for pic in pic_path:
             # Send the picture to the chat
             await send_pic(update, pic)
             # wait 5 seconds before sending the next video if throttle is enabled
             if THROTTLE:
-                time.sleep(15)
+                await asyncio.sleep(15)
 
     finally:
         if media_path:
@@ -294,7 +295,8 @@ async def send_video(update: Update, video, has_spoiler: bool) -> None:
 
     Args:
         update (telegram.Update): Represents the incoming update from the Telegram bot.
-        video (str or list): The path to the video file to send.
+        video (str or list): The path to the video file to send. If a list is provided,
+            the videos will be sent as a media group with up to 2 videos per group.
         has_spoiler (bool): Indicates if the message contains a spoiler.
 
     Returns:
@@ -349,7 +351,8 @@ async def send_pic(update: Update, pic) -> None:
     Sends the picture to the chat.
     Args:
         update (telegram.Update): Represents the incoming update from the Telegram bot.
-        pic (str or list): The path to the pictures file to send.
+        pic (str or list): The path to the picture file to send. If a list is provided,
+            the pictures will be sent as a media group with up to 10 pictures per group.
     Returns:
         None
     """
