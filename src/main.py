@@ -236,7 +236,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
         if len(video_path) > 1:
             # Group videos
             video_path = [video_path[i : i + 2] for i in range(0, len(video_path), 2)]
-            # TODO: Implement a total size calculation for the group of videos
+            # TODO: Implement a total size calculation for the group of videos  # pylint: disable=fixme
             # and resort to sending them one by one if the total size exceeds the limit
 
         if len(pic_path) > 1:
