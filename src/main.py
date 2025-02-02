@@ -259,14 +259,14 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
             await send_video(update, video, has_spoiler)
             # wait 5 seconds before sending the next media throttle is enabled
             if THROTTLE:
-                time.sleep(5)
+                time.sleep(15)
 
         for pic in pic_path:
             # Send the picture to the chat
             await send_pic(update, pic)
             # wait 5 seconds before sending the next video if throttle is enabled
             if THROTTLE:
-                time.sleep(5)
+                time.sleep(15)
 
     finally:
         if media_path:
