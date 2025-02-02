@@ -308,8 +308,7 @@ async def send_pic(update: Update, pic: str) -> None:
     Sends the picture to the chat.
     Args:
         update (telegram.Update): Represents the incoming update from the Telegram bot.
-        video_path (str): The path to the video file to send.
-        has_spoiler (bool): Indicates if the message contains a spoiler.
+        pic (str): The path to the pictures file to send.
     Returns:
         None
     """
