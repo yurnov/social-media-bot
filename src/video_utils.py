@@ -190,7 +190,7 @@ def download_instagram_media(url, temp_dir):
 
     # Ensure that reels not in the URL
     if "reel" in url:
-        error("Reels should be handled by the yt-dlp")
+        error("Reels should be handled by the yt-dlp. Abort.")
         return None
 
     command = [
@@ -272,7 +272,7 @@ def download_media(url):
     except subprocess.CalledProcessError as e:
         error("Error downloading video: %s", e)
         if "[Instagram]" in str(e) and "No video formats found!" in str(e):
-            debug("yt-dlp failed for Instagram URL, trying gallery-dl")
+            debug("The yt-dlp did not find Instagram reels, trying gallery-dl for images")
         try:
             result_path = download_instagram_media(url, temp_dir)
             if result_path:
@@ -280,12 +280,11 @@ def download_media(url):
                 return result_path
             else:
                 error("Failed to download Instagram media using gallery-dl")
-        except Exception as ed:  # pylint: disable=broad-except
-            error("Unexpected error during Instagram download: %s", ed)
+        except Exception as e:  # pylint: disable=broad-except
+            error("Unexpected error during Instagram download images by gallery-dl: %s", e)
     except subprocess.TimeoutExpired as e:
         error("Download process timed out: %s", e)
     except (OSError, IOError) as e:
-        debug("Downloading video from URL: %s", url)
         error("File system error occurred: %s", e)
     except yt_dlp.utils.DownloadError as e:
         error("Download error occurred: %s", e)
@@ -302,11 +301,11 @@ def cleanup(media_path):
     """
     Cleans up temporary files by deleting the specified video file and its containing directory.
 
-    This function attempts to remove the specified video file and
+    This function removes the specified media_path with video or images and
     its parent directory. Logs are printed if debugging is enabled.
 
     Parameters:
-        video_path (list): The path to the video file to delete.
+        media_path (list): The path to the video file to delete.
 
     Logs:
         Logs messages about the deletion process or any errors encountered.
