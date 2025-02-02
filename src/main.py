@@ -316,12 +316,17 @@ async def send_video(update: Update, video, has_spoiler: bool) -> None:
             error("Telegram timeout while sending video. %s", e)
         except (NetworkError, TelegramError) as e:
             await update.message.reply_text(f"Error sending video: {str(e)}. Please try again later.")
+        finally:
+            video_file.close()
 
     # Send the group of videos
     elif isinstance(video, list):
         media_group = []
+        opened_files = []
         for video_file in video:
-            media_group.append(InputMediaVideo(open(video_file, 'rb')))
+            file = open(video_file, 'rb')
+            opened_files.append(file)
+            media_group.append(InputMediaVideo(file))
         debug("Sending a group with number of videos: %s", len(media_group))
         try:
             await update.message.chat.send_media_group(
@@ -334,6 +339,9 @@ async def send_video(update: Update, video, has_spoiler: bool) -> None:
             error("Telegram timeout while sending group of videos. %s", e)
         except (NetworkError, TelegramError) as e:
             await update.message.reply_text(f"Error sending group of videos: {str(e)}. Please try again later.")
+        finally:
+            for file in opened_files:
+                file.close()
 
 
 async def send_pic(update: Update, pic) -> None:
@@ -359,11 +367,16 @@ async def send_pic(update: Update, pic) -> None:
             error("Telegram timeout while sending picture. %s", e)
         except (NetworkError, TelegramError) as e:
             await update.message.reply_text(f"Error sending picture: {str(e)}. Please try again later.")
+        finally:
+            pic_file.close()
 
     elif isinstance(pic, list):
         media_group = []  # Initilize empty list of media groups
+        opened_files = []  # Initilize empty list of opened files
         for pic_file in pic:
-            media_group.append(InputMediaPhoto(open(pic_file, 'rb')))
+            file = open(pic_file, 'rb')
+            opened_files.append(file)
+            media_group.append(InputMediaPhoto(file))
         debug("Sending a group with number of pictures: %s", len(media_group))
         # Send the media group
         try:
@@ -377,6 +390,9 @@ async def send_pic(update: Update, pic) -> None:
             error("Telegram timeout while sending group of pictures. %s", e)
         except (NetworkError, TelegramError) as e:
             await update.message.reply_text(f"Error sending group of pictures: {str(e)}. Please try again later.")
+        finally:
+            for file in opened_files:
+                file.close()
 
 
 def main():
