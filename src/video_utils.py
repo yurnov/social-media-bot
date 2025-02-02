@@ -260,7 +260,7 @@ def download_media(url):
 
     debug("Downloading video from URL: %s", url)
     debug("Downloading video to temp_dir full path: %s", os.path.abspath(temp_dir))
-    result_path = temp_dir  # Initialize the result variable
+    result_path = None  # Initialize the result variable
 
     try:
         subprocess.run(command, check=True, timeout=120)
