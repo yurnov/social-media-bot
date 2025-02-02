@@ -178,7 +178,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
     if not any(site in message_text for site in supported_sites):
         if update.effective_chat.type == "private":
             not_supported_responses = {
-                "ua": "Цей сайт не підтримується. Спробуйте додати ** перед https://",
+                "uk": "Цей сайт не підтримується. Спробуйте додати ** перед https://",
                 "en": "This site is not supported. Try adding ** before the https://",
             }
             await update.message.reply_text(not_supported_responses[language])
