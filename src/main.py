@@ -3,7 +3,6 @@
 import os
 import random
 import json
-import time
 import asyncio
 from functools import lru_cache
 from dotenv import load_dotenv
@@ -323,8 +322,8 @@ async def send_video(update: Update, video, has_spoiler: bool) -> None:
 
     # Send the group of videos
     elif isinstance(video, list):
-        media_group = []
-        opened_files = []
+        media_group = []  # Initilize empty list of media groups
+        opened_files = []  # Initilize empty list of opened files
         for video_file in video:
             file = open(video_file, 'rb')
             opened_files.append(file)
