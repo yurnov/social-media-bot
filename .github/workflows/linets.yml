@@ -55,4 +55,4 @@ jobs:
 
       - name: Lint JSON files
         run: |
-          jsonlint -q src/**/*.json
+          jsonlint -q src/*.json
