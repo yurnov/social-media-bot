@@ -37,9 +37,29 @@ jobs:
           cd src/
           pylint --disable=R,C,W1203,W0105 .
 
+  lint-docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
       - name: Lint Dockerfile with hadolint
         uses: hadolint/hadolint-action@v3.1.0
         with:
           dockerfile: Dockerfile
           failure-threshold: error
           ignore: DL3008
+
+  lint-json:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Install jq
+        run: sudo apt-get install -y jq
+      - name: Lint JSON Files
+        run: |
+          EXIT_CODE=0
+          for file in $(find . -type f -name "*.json"); do
+            jq empty "$file" || EXIT_CODE=1
+          done
+          exit $EXIT_CODE
