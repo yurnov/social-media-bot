@@ -24,7 +24,10 @@ from video_utils import (
 load_dotenv()
 
 # Default to Ukrainian if not set
-language = os.getenv("LANGUAGE", "ua").lower()
+language = os.getenv("LANGUAGE", "uk").lower()
+# Add backward compatibility for old language setting
+if language == "ua":
+    language = "uk"
 
 TELEGRAM_WRITE_TIMEOUT = 8000
 TELEGRAM_READ_TIMEOUT = 8000
@@ -35,7 +38,7 @@ TELEGRAM_READ_TIMEOUT = 8000
 def load_responses():
     """Function loading bot responses based on language setting."""
 
-    filename = "responses_ua.json" if language == "ua" else "responses_en.json"
+    filename = "responses_uk.json" if language == "uk" else "responses_en.json"
     try:
         with open(filename, "r", encoding="utf-8") as file:
             data = json.load(file)
@@ -44,7 +47,7 @@ def load_responses():
         # Return a minimal set of responses if no response files found
         not_found_responses = {
             "en": "Sorry, I'm having trouble loading my responses right now! 😅",
-            "ua": "Вибачте, у мене проблеми із завантаженням відповідей! 😅",
+            "uk": "Вибачте, у мене проблеми із завантаженням відповідей! 😅",
         }
         return not_found_responses[language]
 
@@ -180,7 +183,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):  #
     if not any(site in message_text for site in supported_sites):
         if update.effective_chat.type == "private":
             not_supported_responses = {
-                "ua": "Цей сайт не підтримується. Спробуйте додати ** перед https://",
+                "uk": "Цей сайт не підтримується. Спробуйте додати ** перед https://",
                 "en": "This site is not supported. Try adding ** before the https://",
             }
             await update.message.reply_text(not_supported_responses[language])
