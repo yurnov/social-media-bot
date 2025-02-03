@@ -2,12 +2,14 @@
 # pylint: disable=missing-function-docstring
 
 import os
+import re
 import shutil
 import subprocess
 import tempfile
-import yt_dlp  # Ensure yt_dlp is installed and available
+import yt_dlp
 from dotenv import load_dotenv
 from logger import debug, error
+from pathlib import PurePath, Path
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -164,19 +166,82 @@ def get_video_duration(video_path):
         return None
 
 
-def download_video(url):
+def download_instagram_media(url, temp_dir):
+    """
+    Downloads Instagram media using gallery-dl.
+
+    This function uses the `gallery-dl` command-line tool to download media from Instagram.
+    The media is stored in a temporary directory. The function returns the path to the downloaded
+    media file if successful.
+
+    Parameters:
+        url (str): The URL of the Instagram media to download.
+        temp_dir (str): The path to the temporary directory to store the downloaded media.
+
+    Returns:
+        str: The path to the downloaded media file if successful, or None if the download fails.
+    """
+    result_path = None  # Initialize the result variable
+
+    # Validate Instagram URL
+    if not re.match(r'^https?://(?:www\.)?instagram\.com/[^/]+/[^/]+/?.*$', url):
+        error("Invalid Instagram URL")
+        return None
+
+    # Ensure that reels not in the URL
+    if "reel" in url:
+        error("Reels should be handled by the yt-dlp. Abort.")
+        return None
+
+    command = [
+        "gallery-dl",  # Assuming gallery-dl is installed and in the PATH
+        *(["--cookies", "instagram_cookies.txt"] if INSTACOOKIES else []),
+        url,
+        "-d",
+        temp_dir,
+    ]
+
+    try:
+        debug("Running gallery-dl command: %s", command)
+        subprocess.run(command, check=True, timeout=120)
+        result_path = []  # Initialize the result variable as a empty list
+        # Use Path.rglob to recursively search for files in the temp directory
+        # as the output contains subdirectories and may contain multiple files
+        for file in [str(file) for file in Path(temp_dir).rglob("*")]:
+            if file.endswith((".mp4", ".jpg", ".jpeg", ".png")):
+                # Append the file path to the result list
+                result_path.append(file)
+        if not result_path:
+            error("No media files found in the gallery-dl output")
+            return None
+
+        return result_path  # Return the result variable if successful
+    except subprocess.CalledProcessError as e:
+        error("Error downloading Instagram media: %s", e)
+    except subprocess.TimeoutExpired as e:
+        error("Download process timed out: %s", e)
+    except (OSError, IOError) as e:
+        error("File system error occurred: %s", e)
+
+    return result_path  # Return the result variable at the end
+
+
+def download_media(url):
     """
     Downloads a video from the specified URL using yt-dlp and saves it as an MP4 file.
 
     This function uses the `yt-dlp` command-line tool to download a video. The video is stored
     in a temporary directory with a filename based on the video's title. The function
-    returns the path to the downloaded video file if successful.
+    returns the path to the downloaded video file if successful. If the download fails, "[Instagram]"
+    and "No video formats found!" present in the error message, the function will invoke
+    download_instagram_media based on `gallery-dl`, and will return a list of media (may contain
+    videos, pictures or mix of them).
 
     Parameters:
         url (str): The URL of the video to download.
 
     Returns:
-        str: The path to the downloaded MP4 video file if successful, or None if the download fails.
+        list: The list of path to the downloaded media files if successful, or None if the download fails.
 
     Exceptions:
         Handles exceptions for subprocess errors, timeouts, or unexpected errors during the
@@ -206,45 +271,61 @@ def download_video(url):
                 break  # Exit the loop once the file is found
     except subprocess.CalledProcessError as e:
         error("Error downloading video: %s", e)
+        if "[Instagram]" in str(e) and "No video formats found!" in str(e):
+            debug("The yt-dlp did not find Instagram reels, trying gallery-dl for images")
+        try:
+            result_path = download_instagram_media(url, temp_dir)
+            if result_path:
+                debug("Successfully downloaded Instagram media using gallery-dl")
+                return result_path
+            else:
+                error("Failed to download Instagram media using gallery-dl")
+        except Exception as gallery_dl_error:  # pylint: disable=broad-except
+            error("Unexpected error during Instagram download images by gallery-dl: %s", gallery_dl_error)
     except subprocess.TimeoutExpired as e:
         error("Download process timed out: %s", e)
     except (OSError, IOError) as e:
-        debug("Downloading video from URL: %s", url)
         error("File system error occurred: %s", e)
     except yt_dlp.utils.DownloadError as e:
         error("Download error occurred: %s", e)
     except yt_dlp.utils.ExtractorError as e:
         error("Extractor error occurred: %s", e)
+    finally:
+        if result_path is None:
+            shutil.rmtree(temp_dir)
 
     return result_path  # Return the result variable at the end
 
 
-def cleanup(video_path):
+def cleanup(media_path):
     """
     Cleans up temporary files by deleting the specified video file and its containing directory.
 
-    This function attempts to remove the specified video file and
+    This function removes the specified media_path with video or images and
     its parent directory. Logs are printed if debugging is enabled.
 
     Parameters:
-        video_path (str): The path to the video file to delete.
+        media_path (list): The path to the video file to delete.
 
     Logs:
         Logs messages about the deletion process or any errors encountered.
     """
-    debug("Temporary directory to delete %s", video_path)
 
-    if os.path.isdir(video_path):
-        debug("Temporary directory is empty: %s", video_path)
-        temp_dir = video_path
-    else:
-        debug("Temporary directory is not empty: %s", os.path.dirname(video_path))
-        temp_dir = os.path.dirname(video_path)
+    folder_to_delete = None
+    if isinstance(media_path, list):
+        try:
+            first_media_path = PurePath(media_path[0])
+            folder_to_delete = f"/{first_media_path.parts[1]}/{first_media_path.parts[2]}"
+        except (OSError, IOError):
+            debug("Unable to find temp folder for %s", media_path[0])
+            return
+
+    debug("Temporary directory to delete %s", folder_to_delete)
     try:
-        shutil.rmtree(temp_dir)
-        if os.path.exists(video_path):
-            error("Temporary directory still exists after cleanup: %s", video_path)
+        shutil.rmtree(folder_to_delete)
+        if os.path.exists(folder_to_delete):
+            error("Temporary directory still exists after cleanup: %s", folder_to_delete)
         else:
-            debug("Temporary directory successfully deleted: %s", video_path)
+            debug("Temporary directory successfully deleted: %s", folder_to_delete)
     except (OSError, IOError) as cleanup_error:
-        error("Error deleting file: %s", cleanup_error)
+        error("Error deleting folder: %s", cleanup_error)
