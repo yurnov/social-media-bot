@@ -49,8 +49,8 @@ jobs:
           failure-threshold: error
           ignore: DL3008
 
-  json-lint:
-    name: Lint JSON files
+  lint-json:
+    name: Lint-json
     runs-on: ubuntu-latest
 
     steps:
@@ -60,4 +60,5 @@ jobs:
         run: sudo apt-get install -y jq
       - name: Lint JSON Files
         run: |
-          find . -type f -name "*.json" -exec jq empty {} \; || exit 1
+          set -e
+          find . -type f -name "*.json" -exec jq empty {} \;
