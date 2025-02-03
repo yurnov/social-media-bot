@@ -50,9 +50,7 @@ jobs:
           ignore: DL3008
 
   lint-json:
-    name: Lint-json
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
