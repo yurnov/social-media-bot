@@ -43,3 +43,16 @@ jobs:
           dockerfile: Dockerfile
           failure-threshold: error
           ignore: DL3008
+
+      # New steps for JSON linting
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install jsonlint
+        run: npm install -g jsonlint
+
+      - name: Lint JSON files
+        run: |
+          jsonlint -q src/**/*.json
