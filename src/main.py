@@ -29,8 +29,8 @@ language = os.getenv("LANGUAGE", "uk").lower()
 if language == "ua":
     language = "uk"
 
-# Healthcheck
-HEALTHCHECK = os.getenv("HEALTHCHECK", "False").lower() == "true"
+# Reply with user data for Healthcheck
+send_user_info_with_healthcheck = os.getenv("SEND_USER_INFO_WITH_HEALTHCHECK", "False").lower() == "true"
 
 
 TELEGRAM_WRITE_TIMEOUT = 8000
@@ -288,8 +288,8 @@ async def respond_with_bot_message(update: Update) -> None:
         None
     """
     response_message = random.choice(responses)  # Select a random response from the predefined list
-    info("Healthcheck requested [Chat ID]: %s by the user %s", update.effective_chat.id, update.effective_user.username)
-    if HEALTHCHECK:
+    info(" requested [Chat ID]: %s by the user %s", update.effective_chat.id, update.effective_user.username)
+    if send_user_info_with_healthcheck:
         response_message += f"\n[Chat ID]: {update.effective_chat.id}\n[Username]: {update.effective_user.username}"
     await update.message.reply_text(f"{response_message}")
 
